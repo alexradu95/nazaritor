@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { BaseObjectSchema } from './base-object'
 
+// Enums for common project property values
 export const ProjectStatusEnum = z.enum([
   'planning',
   'active',
@@ -11,22 +12,20 @@ export const ProjectStatusEnum = z.enum([
 
 export const PriorityEnum = z.enum(['low', 'medium', 'high', 'urgent'])
 
-export const ProjectPropertiesSchema = z.object({
-  status: ProjectStatusEnum,
-  priority: PriorityEnum.optional(),
-  startDate: z.coerce.date().optional(),
-  dueDate: z.coerce.date().optional(),
-  completedDate: z.coerce.date().optional(),
-  progress: z.number().min(0).max(100).default(0),
-  objectives: z.array(z.string()).optional(),
-  budget: z.number().optional(),
-  members: z.array(z.string().uuid()).optional(),
-  relatedTasks: z.array(z.string().uuid()).optional(),
-})
+// Project uses the flexible property system from BaseObject
+// Common properties for projects (documentation/reference):
+// - status: select property with ProjectStatusEnum options
+// - priority: select property with PriorityEnum options
+// - startDate: date property
+// - dueDate: date property
+// - completedDate: date property
+// - progress: number property (0-100)
+// - objectives: multi-select or long-text
+// - budget: currency property
 
 export const ProjectSchema = BaseObjectSchema.extend({
   type: z.literal('project'),
-  properties: ProjectPropertiesSchema,
+  // Inherits flexible properties from BaseObject
 })
 
 export type Project = z.infer<typeof ProjectSchema>

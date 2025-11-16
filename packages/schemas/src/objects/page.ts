@@ -1,31 +1,30 @@
 import { z } from 'zod'
 import { BaseObjectSchema } from './base-object'
 
+// Enums for common page property values
 export const PageStatusEnum = z.enum(['draft', 'in-review', 'published', 'archived'])
 
-export const TableOfContentsItemSchema = z.object({
-  level: z.number(),
-  title: z.string(),
-  id: z.string(),
-})
-
-export const PagePropertiesSchema = z.object({
-  category: z.string().optional(),
-  template: z.string().optional(),
-  wordCount: z.number().optional(),
-  readTime: z.number().optional(),
-  version: z.number().default(1),
-  lastReviewed: z.coerce.date().optional(),
-  status: PageStatusEnum.default('draft'),
-  tableOfContents: z.array(TableOfContentsItemSchema).optional(),
-  subpages: z.array(z.string().uuid()).optional(),
-})
+// Page uses the flexible property system from BaseObject
+// Common properties for pages (documentation/reference):
+// - category: text property
+// - template: text property (template name to use)
+// - wordCount: number property (auto-calculated)
+// - readTime: number property (in minutes, auto-calculated)
+// - version: number property (version control)
+// - lastReviewed: date property
+// - status: select property with PageStatusEnum options
+// - tableOfContents: file property or long-text (structured JSON)
+//
+// Relations (use relations table, not properties):
+// - subpages: relations to child Page objects (parent_of)
+// - parentPage: relation to parent Page object
+// - containsResources: relations to Resource objects embedded in the page
+// - referencesProjects: relations to Project objects mentioned
 
 export const PageSchema = BaseObjectSchema.extend({
   type: z.literal('page'),
-  properties: PagePropertiesSchema,
+  // Inherits flexible properties from BaseObject
 })
 
 export type Page = z.infer<typeof PageSchema>
 export type PageStatus = z.infer<typeof PageStatusEnum>
-export type TableOfContentsItem = z.infer<typeof TableOfContentsItemSchema>

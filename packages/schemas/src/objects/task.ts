@@ -2,35 +2,34 @@ import { z } from 'zod'
 import { BaseObjectSchema } from './base-object'
 import { PriorityEnum } from './project'
 
+// Enums for common task property values
 export const TaskStatusEnum = z.enum(['todo', 'in-progress', 'waiting', 'done', 'cancelled'])
 
-export const RecurrenceSchema = z.object({
-  frequency: z.enum(['daily', 'weekly', 'monthly', 'yearly']),
-  interval: z.number().default(1),
-  endDate: z.coerce.date().optional(),
-})
-
-export const TaskPropertiesSchema = z.object({
-  status: TaskStatusEnum.default('todo'),
-  priority: PriorityEnum.default('medium'),
-  dueDate: z.coerce.date().optional(),
-  scheduledDate: z.coerce.date().optional(),
-  completedDate: z.coerce.date().optional(),
-  estimatedTime: z.number().optional(),
-  actualTime: z.number().optional(),
-  project: z.string().uuid().optional(),
-  parentTask: z.string().uuid().optional(),
-  subtasks: z.array(z.string().uuid()).optional(),
-  assignee: z.string().uuid().optional(),
-  blockedBy: z.array(z.string().uuid()).optional(),
-  recurrence: RecurrenceSchema.optional(),
-})
+// Task uses the flexible property system from BaseObject
+// Common properties for tasks (documentation/reference):
+// - status: select property with TaskStatusEnum options
+// - priority: select property with PriorityEnum options
+// - dueDate: date property
+// - scheduledDate: date property
+// - completedDate: date property
+// - estimatedTime: number property (in hours/minutes)
+// - actualTime: number property (in hours/minutes)
+// - recurrenceFrequency: select property (daily, weekly, monthly, yearly)
+// - recurrenceInterval: number property
+// - recurrenceEndDate: date property
+//
+// Relations (use relations table, not properties):
+// - project: relation to Project object
+// - parentTask: relation to parent Task
+// - subtasks: relations to child Tasks
+// - assignee: relation to Person object
+// - blockedBy: relations to blocking Tasks
 
 export const TaskSchema = BaseObjectSchema.extend({
   type: z.literal('task'),
-  properties: TaskPropertiesSchema,
+  // Inherits flexible properties from BaseObject
 })
 
 export type Task = z.infer<typeof TaskSchema>
 export type TaskStatus = z.infer<typeof TaskStatusEnum>
-export type Recurrence = z.infer<typeof RecurrenceSchema>
+export type Priority = z.infer<typeof PriorityEnum>

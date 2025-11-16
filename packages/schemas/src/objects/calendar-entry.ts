@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { BaseObjectSchema } from './base-object'
-import { RecurrenceSchema } from './task'
 
+// Enums for common calendar entry property values
 export const EventTypeEnum = z.enum([
   'meeting',
   'appointment',
@@ -13,37 +13,31 @@ export const EventTypeEnum = z.enum([
 
 export const EventStatusEnum = z.enum(['confirmed', 'tentative', 'cancelled'])
 
-export const ReminderSchema = z.object({
-  enabled: z.boolean().default(false),
-  minutesBefore: z.number().default(15),
-})
-
-export const CalendarRecurrenceSchema = RecurrenceSchema.extend({
-  daysOfWeek: z.array(z.number().min(0).max(6)).optional(),
-})
-
-export const CalendarEntryPropertiesSchema = z.object({
-  startTime: z.coerce.date(),
-  endTime: z.coerce.date(),
-  allDay: z.boolean().default(false),
-  location: z.string().optional(),
-  locationUrl: z.string().url().optional(),
-  attendees: z.array(z.string().uuid()).optional(),
-  eventType: EventTypeEnum,
-  status: EventStatusEnum.default('confirmed'),
-  reminder: ReminderSchema.optional(),
-  recurrence: CalendarRecurrenceSchema.optional(),
-  relatedTasks: z.array(z.string().uuid()).optional(),
-  relatedProject: z.string().uuid().optional(),
-})
+// CalendarEntry uses the flexible property system from BaseObject
+// Common properties for calendar entries (documentation/reference):
+// - eventType: select property with EventTypeEnum options
+// - status: select property with EventStatusEnum options
+// - startTime: datetime property
+// - endTime: datetime property
+// - location: text or url property
+// - isAllDay: checkbox property
+// - reminderEnabled: checkbox property
+// - reminderMinutes: number property
+// - recurrenceFrequency: select property (daily, weekly, monthly, yearly)
+// - recurrenceInterval: number property
+// - recurrenceEndDate: date property
+// - meetingUrl: url property (for virtual meetings)
+//
+// Relations (use relations table, not properties):
+// - attendees: relations to Person objects
+// - relatedProject: relation to Project object
+// - relatedTasks: relations to Task objects
 
 export const CalendarEntrySchema = BaseObjectSchema.extend({
   type: z.literal('calendar-entry'),
-  properties: CalendarEntryPropertiesSchema,
+  // Inherits flexible properties from BaseObject
 })
 
 export type CalendarEntry = z.infer<typeof CalendarEntrySchema>
 export type EventType = z.infer<typeof EventTypeEnum>
 export type EventStatus = z.infer<typeof EventStatusEnum>
-export type Reminder = z.infer<typeof ReminderSchema>
-export type CalendarRecurrence = z.infer<typeof CalendarRecurrenceSchema>

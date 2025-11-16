@@ -1,4 +1,5 @@
 import { router, publicProcedure } from '../init'
+import { protectedProcedure } from '../middleware/errorHandler'
 import { z } from 'zod'
 import { BaseObjectSchema } from '@repo/schemas'
 import type { Metadata } from '@repo/schemas'
@@ -8,6 +9,8 @@ import { eq, desc, and } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 
 // Helper function to convert DB object to BaseObject schema
+// Note: Relations are NOT included in BaseObject - they must be fetched separately
+// using the relations helper functions from @repo/database
 function dbToBaseObject(obj: DbObject) {
   return {
     id: obj.id,
@@ -15,7 +18,6 @@ function dbToBaseObject(obj: DbObject) {
     title: obj.title,
     content: obj.content || '',
     properties: obj.properties || {},
-    relations: [],
     archived: obj.archived, // Top-level archived field (indexed for queries)
     metadata: {
       ...(obj.metadata || {}),
@@ -34,7 +36,7 @@ export const objectRouter = router({
   }),
 
   // Create a new object
-  create: publicProcedure
+  create: protectedProcedure
     .input(BaseObjectSchema.omit({ id: true, metadata: true }))
     .output(BaseObjectSchema)
     .mutation(async ({ input, ctx }) => {
@@ -68,7 +70,7 @@ export const objectRouter = router({
     }),
 
   // Get object by ID
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .output(BaseObjectSchema.nullable())
     .query(async ({ input, ctx }) => {
@@ -84,7 +86,7 @@ export const objectRouter = router({
     }),
 
   // List objects with filters
-  list: publicProcedure
+  list: protectedProcedure
     .input(
       z.object({
         type: z.string().optional(),
@@ -124,7 +126,7 @@ export const objectRouter = router({
     }),
 
   // Update object
-  update: publicProcedure
+  update: protectedProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -189,7 +191,7 @@ export const objectRouter = router({
     }),
 
   // Delete object
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .output(z.object({ success: z.boolean() }))
     .mutation(async ({ input, ctx }) => {
@@ -213,7 +215,7 @@ export const objectRouter = router({
     }),
 
   // Archive/unarchive object
-  archive: publicProcedure
+  archive: protectedProcedure
     .input(
       z.object({
         id: z.string().uuid(),

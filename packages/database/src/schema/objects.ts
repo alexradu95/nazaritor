@@ -16,10 +16,15 @@ export const objects = sqliteTable(
   },
   (table) => {
     return {
+      // Single column indexes
       typeIdx: index('type_idx').on(table.type),
       createdAtIdx: index('created_at_idx').on(table.createdAt),
       updatedAtIdx: index('updated_at_idx').on(table.updatedAt),
       archivedIdx: index('archived_idx').on(table.archived),
+      // Composite indexes for common query patterns
+      typeArchivedIdx: index('idx_objects_type_archived').on(table.type, table.archived),
+      archivedTypeIdx: index('idx_objects_archived_type').on(table.archived, table.type),
+      typeUpdatedAtIdx: index('idx_objects_type_updated_at').on(table.type, table.updatedAt),
     }
   }
 )

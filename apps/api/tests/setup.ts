@@ -52,6 +52,7 @@ async function setupTestDatabase() {
       '0001_add_constraints.sql',
       '0002_add_custom_type.sql',
       '0003_unique_daily_note_dates.sql',
+      '0004_add_composite_indexes.sql',
     ]
 
     for (const file of migrationFiles) {

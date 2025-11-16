@@ -2,7 +2,7 @@
 // This runs before all tests
 
 import { Database } from 'bun:sqlite'
-import { readFileSync, existsSync, mkdirSync, unlinkSync } from 'fs'
+import { mkdirSync } from 'fs'
 import { dirname, join } from 'path'
 
 // Setup test environment variables FIRST
@@ -20,16 +20,18 @@ console.log('Test environment initialized')
 console.log('Test database:', process.env.DATABASE_URL)
 
 // Create test database with schema
-function setupTestDatabase() {
-  // Ensure data directory exists
+async function setupTestDatabase() {
+  // Ensure data directory exists (no Bun equivalent for mkdir)
   const dir = dirname(testDbPath)
-  if (!existsSync(dir)) {
+  const dirExists = await Bun.file(dir).exists()
+  if (!dirExists) {
     mkdirSync(dir, { recursive: true })
   }
 
-  // Remove existing test database
-  if (existsSync(testDbPath)) {
-    unlinkSync(testDbPath)
+  // Remove existing test database using Bun native API
+  const testDbFile = Bun.file(testDbPath)
+  if (await testDbFile.exists()) {
+    await Bun.$`rm -f ${testDbPath}`
   }
 
   // Create fresh database
@@ -37,17 +39,18 @@ function setupTestDatabase() {
   db.run('PRAGMA foreign_keys = ON')
 
   try {
-    // Read migration file
+    // Read migration file using Bun native API
     const migrationPath = join(
       import.meta.dir,
       '../../../packages/database/migrations/0000_initial.sql'
     )
 
-    if (!existsSync(migrationPath)) {
+    const migrationFile = Bun.file(migrationPath)
+    if (!(await migrationFile.exists())) {
       throw new Error(`Migration file not found: ${migrationPath}`)
     }
 
-    const migration = readFileSync(migrationPath, 'utf-8')
+    const migration = await migrationFile.text()
 
     // Execute the entire migration file at once
     // This handles multi-line statements like triggers correctly
@@ -63,5 +66,5 @@ function setupTestDatabase() {
   }
 }
 
-// Setup database before tests
-setupTestDatabase()
+// Setup database before tests (now async)
+await setupTestDatabase()

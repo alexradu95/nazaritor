@@ -73,7 +73,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 cd apps/api
 
 # Run migrations (creates SQLite database automatically)
-bun src/db/migrate.ts
+bun run db:migrate
 ```
 
 **Expected output:**
@@ -366,7 +366,7 @@ cd apps/api
 
 # After changing schema in packages/database:
 bun run db:generate    # Generate migration
-bun src/db/migrate.ts  # Run migration
+bun run db:migrate  # Run migration
 
 # View database
 bun run db:studio      # Opens at http://localhost:4983

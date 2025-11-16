@@ -123,8 +123,6 @@ export const EmailPropertySchema = z.object({
   config: z.object({}).optional(),
 })
 
-// Note: Relations are stored in the relations table, not as properties
-// Use the relation helper functions from @repo/database instead
 
 export const FilePropertySchema = z.object({
   type: z.literal('file'),
@@ -212,12 +210,3 @@ export type FileProperty = z.infer<typeof FilePropertySchema>
 export type AiGeneratedProperty = z.infer<typeof AiGeneratedPropertySchema>
 export type CurrencyProperty = z.infer<typeof CurrencyPropertySchema>
 export type RatingProperty = z.infer<typeof RatingPropertySchema>
-
-// Helper type for property configs (backward compatibility)
-export type PropertyConfig =
-  | TextProperty['config']
-  | NumberProperty['config']
-  | DateProperty['config']
-  | SelectProperty['config']
-  | MultiSelectProperty['config']
-  // ... other configs

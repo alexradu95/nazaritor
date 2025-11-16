@@ -95,7 +95,7 @@ cd apps/api
 bun run db:generate
 
 # Run migrations
-bun src/db/migrate.ts
+bun run db:migrate
 ```
 
 ### 5. Start Development Servers
@@ -245,7 +245,7 @@ ls -la apps/api/data/
 
 # Reset database (warning: deletes all data)
 rm apps/api/data/nazaritor.db
-cd apps/api && bun src/db/migrate.ts
+cd apps/api && bun run db:migrate
 
 # Database locked error (close all connections)
 # 1. Stop dev server (Ctrl+C)

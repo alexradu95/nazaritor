@@ -105,7 +105,7 @@ cp apps/web/.env.example apps/web/.env.local
 
 # Run database migrations (creates SQLite database)
 cd apps/api
-bun src/db/migrate.ts
+bun run db:migrate
 
 # Start development servers
 cd ../..

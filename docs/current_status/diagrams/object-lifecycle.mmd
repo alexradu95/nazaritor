@@ -1,0 +1,26 @@
+stateDiagram-v2
+    [*] --> Created: create()
+    Created --> Active: Initial state
+    Active --> Updated: update()
+    Updated --> Active: Changes saved
+    Active --> Archived: archive()
+    Archived --> Active: unarchive()
+    Active --> Favorited: favorite()
+    Favorited --> Active: unfavorite()
+    Archived --> Deleted: delete()
+    Deleted --> [*]
+
+    note right of Created
+        Objects are created with
+        type, title, properties
+    end note
+
+    note right of Active
+        Objects can be queried,
+        related, and modified
+    end note
+
+    note right of Archived
+        Soft delete - hidden
+        from default queries
+    end note

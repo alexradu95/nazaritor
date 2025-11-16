@@ -1,0 +1,44 @@
+graph TD
+    Root[nazaritor/]
+
+    subgraph "Applications"
+        API[apps/api<br/>Backend API]
+        Web[apps/web<br/>Next.js Frontend]
+    end
+
+    subgraph "Shared Packages"
+        Schemas[packages/schemas<br/>Zod Schemas]
+        Types[packages/types<br/>TS Types]
+        Database[packages/database<br/>Drizzle ORM]
+    end
+
+    subgraph "Infrastructure"
+        Docs[docs/<br/>Documentation]
+        Config[Config Files<br/>package.json, tsconfig]
+    end
+
+    Root --> API
+    Root --> Web
+    Root --> Schemas
+    Root --> Types
+    Root --> Database
+    Root --> Docs
+    Root --> Config
+
+    API -->|imports| Schemas
+    API -->|imports| Types
+    API -->|imports| Database
+
+    Web -->|imports| Schemas
+    Web -->|imports| Types
+
+    Database -->|uses| Schemas
+
+    style Root fill:#2196F3,stroke:#1976D2,stroke-width:3px
+    style API fill:#4CAF50
+    style Web fill:#4CAF50
+    style Schemas fill:#FF9800
+    style Types fill:#FF9800
+    style Database fill:#FF9800
+    style Docs fill:#9C27B0
+    style Config fill:#607D8B

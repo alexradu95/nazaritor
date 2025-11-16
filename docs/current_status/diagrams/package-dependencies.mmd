@@ -1,0 +1,54 @@
+graph LR
+    subgraph "Frontend App"
+        Web[apps/web]
+    end
+
+    subgraph "Backend App"
+        API[apps/api]
+    end
+
+    subgraph "Shared Packages"
+        Schemas[packages/schemas]
+        Types[packages/types]
+        Database[packages/database]
+    end
+
+    subgraph "External Dependencies"
+        Bun[Bun Runtime]
+        Next[Next.js 15]
+        Hono[Hono Server]
+        tRPC[tRPC v11]
+        Drizzle[Drizzle ORM]
+        Zod[Zod Validation]
+    end
+
+    API --> Schemas
+    API --> Types
+    API --> Database
+    API --> Hono
+    API --> tRPC
+    API --> Bun
+
+    Web --> Schemas
+    Web --> Types
+    Web --> Next
+    Web --> tRPC
+
+    Database --> Drizzle
+    Database --> Schemas
+    Database --> Bun
+
+    Types --> Schemas
+    Schemas --> Zod
+
+    style API fill:#4CAF50
+    style Web fill:#4CAF50
+    style Schemas fill:#FF9800
+    style Types fill:#FF9800
+    style Database fill:#FF9800
+    style Bun fill:#2196F3
+    style Next fill:#2196F3
+    style Hono fill:#2196F3
+    style tRPC fill:#2196F3
+    style Drizzle fill:#2196F3
+    style Zod fill:#2196F3

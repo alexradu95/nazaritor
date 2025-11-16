@@ -1,0 +1,46 @@
+graph TD
+    Client[tRPC Client<br/>Type-safe calls]
+
+    subgraph "tRPC API Layer"
+        AppRouter[App Router<br/>Root router]
+
+        subgraph "Current Routers ✅"
+            ObjectRouter[Object Router<br/>CRUD operations]
+        end
+
+        subgraph "Future Routers 🚧"
+            RelationRouter[Relation Router<br/>Graph operations]
+            SearchRouter[Search Router<br/>Full-text & semantic]
+            AIRouter[AI Router<br/>Agent orchestration]
+            UserRouter[User Router<br/>Auth & preferences]
+        end
+    end
+
+    subgraph "Database Layer"
+        Drizzle[Drizzle ORM]
+        DB[(SQLite)]
+    end
+
+    Client -->|HTTP/JSON| AppRouter
+    AppRouter --> ObjectRouter
+    AppRouter -.Future.-> RelationRouter
+    AppRouter -.Future.-> SearchRouter
+    AppRouter -.Future.-> AIRouter
+    AppRouter -.Future.-> UserRouter
+
+    ObjectRouter --> Drizzle
+    RelationRouter -.-> Drizzle
+    SearchRouter -.-> Drizzle
+    AIRouter -.-> Drizzle
+    UserRouter -.-> Drizzle
+
+    Drizzle --> DB
+
+    style Client fill:#4CAF50
+    style AppRouter fill:#2196F3,stroke:#1976D2,stroke-width:3px
+    style ObjectRouter fill:#2196F3
+    style RelationRouter fill:#9C27B0,stroke-dasharray: 5 5
+    style SearchRouter fill:#9C27B0,stroke-dasharray: 5 5
+    style AIRouter fill:#9C27B0,stroke-dasharray: 5 5
+    style UserRouter fill:#9C27B0,stroke-dasharray: 5 5
+    style DB fill:#FF9800

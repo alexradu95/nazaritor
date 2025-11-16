@@ -1,0 +1,71 @@
+graph TB
+    subgraph "Frontend (Next.js 15)"
+        UI[Chat Interface]
+        Views[Views: Table/Kanban/Calendar/Graph]
+        AISDKClient[Vercel AI SDK Client]
+        tRPCClient[tRPC React Query Client]
+    end
+
+    subgraph "Backend API (Hono + Bun)"
+        Server[Hono Server]
+        tRPCRouter[tRPC Router]
+        ObjectRouter[Object Router<br/>CRUD Operations]
+        AIOrchestrator[AI Orchestrator<br/>Future]
+
+        subgraph "AI Agents (Future)"
+            Curator[Curator Agent<br/>Organize]
+            Researcher[Researcher Agent<br/>Search]
+            Builder[Builder Agent<br/>UI Gen]
+        end
+    end
+
+    subgraph "Data Layer"
+        DB[(SQLite Database<br/>Bun Native)]
+        Drizzle[Drizzle ORM]
+        Schemas[Zod Schemas]
+    end
+
+    subgraph "Shared Packages"
+        PkgSchemas[packages/schemas<br/>Zod Validation]
+        PkgTypes[packages/types<br/>TypeScript Types]
+        PkgDB[packages/database<br/>Drizzle ORM]
+    end
+
+    UI --> AISDKClient
+    UI --> tRPCClient
+    Views --> tRPCClient
+
+    AISDKClient -.Future.-> AIOrchestrator
+    tRPCClient -->|Type-safe API| tRPCRouter
+
+    Server --> tRPCRouter
+    tRPCRouter --> ObjectRouter
+    tRPCRouter -.Future.-> AIOrchestrator
+
+    AIOrchestrator -.-> Curator
+    AIOrchestrator -.-> Researcher
+    AIOrchestrator -.-> Builder
+
+    ObjectRouter --> Drizzle
+    Curator -.-> Drizzle
+    Researcher -.-> Drizzle
+    Builder -.-> AISDKClient
+
+    Drizzle --> DB
+    Drizzle --> Schemas
+
+    ObjectRouter --> PkgSchemas
+    tRPCRouter --> PkgTypes
+    Drizzle --> PkgDB
+
+    style UI fill:#4CAF50
+    style AISDKClient fill:#4CAF50
+    style tRPCClient fill:#4CAF50
+    style Server fill:#2196F3
+    style tRPCRouter fill:#2196F3
+    style ObjectRouter fill:#2196F3
+    style DB fill:#FF9800
+    style Curator fill:#9C27B0,stroke-dasharray: 5 5
+    style Researcher fill:#9C27B0,stroke-dasharray: 5 5
+    style Builder fill:#9C27B0,stroke-dasharray: 5 5
+    style AIOrchestrator fill:#9C27B0,stroke-dasharray: 5 5

@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant Client
+    participant tRPC
+    participant Validator
+    participant DB
+
+    Client->>tRPC: object.create(data)
+    tRPC->>Validator: Validate with Zod
+    alt Validation fails
+        Validator-->>Client: TRPCError (BAD_REQUEST)
+    else Validation passes
+        Validator->>DB: Insert object
+        DB-->>tRPC: Created object
+        tRPC-->>Client: Object with metadata
+    end

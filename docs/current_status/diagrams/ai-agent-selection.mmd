@@ -1,0 +1,17 @@
+graph TD
+    Input[User Input]
+    Analyze{Analyze Intent}
+
+    Analyze -->|Create, Organize, Tag| Curator[Route to Curator]
+    Analyze -->|Search, Find, Summarize| Researcher[Route to Researcher]
+    Analyze -->|Show, Display, Visualize| Builder[Route to Builder]
+    Analyze -->|Complex task| Multiple[Route to Multiple Agents]
+
+    Multiple --> Curator
+    Multiple --> Researcher
+    Multiple --> Builder
+
+    style Analyze fill:#2196F3
+    style Curator fill:#FF9800
+    style Researcher fill:#9C27B0
+    style Builder fill:#F44336

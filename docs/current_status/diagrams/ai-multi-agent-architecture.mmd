@@ -1,0 +1,55 @@
+graph TD
+    User[User<br/>Natural Language Input]
+
+    subgraph "AI Orchestration Layer"
+        Router[Conversation Router<br/>Intent Analysis]
+
+        subgraph "Specialized Agents"
+            Curator[🗂️ Curator Agent<br/>Organize & Structure]
+            Researcher[🔍 Researcher Agent<br/>Search & Analyze]
+            Builder[🎨 Builder Agent<br/>Generate UI]
+        end
+
+        Context[Shared Context<br/>Conversation Memory]
+    end
+
+    subgraph "Tool Layer"
+        ObjectTools[Object Tools<br/>CRUD operations]
+        SearchTools[Search Tools<br/>Query & filter]
+        UITools[UI Tools<br/>Component generation]
+    end
+
+    subgraph "Data Layer"
+        API[tRPC API]
+        DB[(SQLite Database)]
+    end
+
+    User -->|Chat message| Router
+    Router -->|Organizer tasks| Curator
+    Router -->|Search tasks| Researcher
+    Router -->|UI tasks| Builder
+
+    Curator --> Context
+    Researcher --> Context
+    Builder --> Context
+
+    Curator --> ObjectTools
+    Researcher --> SearchTools
+    Builder --> UITools
+
+    ObjectTools --> API
+    SearchTools --> API
+    UITools --> API
+
+    API --> DB
+
+    Builder -.Streams.-> User
+    Curator -.Updates.-> User
+    Researcher -.Results.-> User
+
+    style User fill:#4CAF50
+    style Router fill:#2196F3,stroke:#1976D2,stroke-width:3px
+    style Curator fill:#FF9800
+    style Researcher fill:#9C27B0
+    style Builder fill:#F44336
+    style Context fill:#00BCD4

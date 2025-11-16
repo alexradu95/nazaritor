@@ -1,0 +1,50 @@
+graph TD
+    BaseObject[Base Object<br/>id, type, title, content, metadata]
+
+    subgraph "Work & Projects"
+        Project[Project<br/>status, priority, dates, budget]
+        Task[Task<br/>status, dueDate, completed]
+    end
+
+    subgraph "Knowledge"
+        KnowledgeBit[Knowledge Bit<br/>category, source, confidence]
+        PersonalBit[Personal Bit<br/>mood, private]
+        Page[Page<br/>template, sections]
+        DailyNote[Daily Note<br/>date, mood, weather]
+    end
+
+    subgraph "Resources"
+        Weblink[Weblink<br/>url, domain, favicon]
+        Person[Person<br/>email, phone, company]
+    end
+
+    subgraph "Life Management"
+        FinancialEntry[Financial Entry<br/>type, amount, category, date]
+        CalendarEntry[Calendar Entry<br/>startTime, endTime, location]
+        Habit[Habit<br/>frequency, streak, lastCheck]
+    end
+
+    BaseObject --> Project
+    BaseObject --> Task
+    BaseObject --> KnowledgeBit
+    BaseObject --> PersonalBit
+    BaseObject --> Page
+    BaseObject --> DailyNote
+    BaseObject --> Weblink
+    BaseObject --> Person
+    BaseObject --> FinancialEntry
+    BaseObject --> CalendarEntry
+    BaseObject --> Habit
+
+    style BaseObject fill:#2196F3,stroke:#1976D2,stroke-width:3px
+    style Project fill:#4CAF50
+    style Task fill:#4CAF50
+    style KnowledgeBit fill:#FF9800
+    style PersonalBit fill:#FF9800
+    style Page fill:#FF9800
+    style DailyNote fill:#FF9800
+    style Weblink fill:#9C27B0
+    style Person fill:#9C27B0
+    style FinancialEntry fill:#F44336
+    style CalendarEntry fill:#F44336
+    style Habit fill:#F44336

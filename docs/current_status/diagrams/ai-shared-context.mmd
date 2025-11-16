@@ -1,0 +1,26 @@
+graph TD
+    Context[Shared Context Store]
+
+    subgraph "Context Data"
+        Conversation[Conversation History]
+        WorkingMemory[Working Memory<br/>Active objects]
+        UserPrefs[User Preferences]
+        AgentState[Agent States]
+    end
+
+    subgraph "Agents Access Context"
+        C[Curator]
+        R[Researcher]
+        B[Builder]
+    end
+
+    Context --> Conversation
+    Context --> WorkingMemory
+    Context --> UserPrefs
+    Context --> AgentState
+
+    C -->|Read/Write| Context
+    R -->|Read/Write| Context
+    B -->|Read| Context
+
+    style Context fill:#00BCD4,stroke:#0097A7,stroke-width:3px

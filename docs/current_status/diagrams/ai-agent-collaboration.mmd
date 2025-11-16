@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant U as User
+    participant R as Router
+    participant Cu as Curator
+    participant Re as Researcher
+    participant B as Builder
+    participant Ctx as Context
+    participant API as tRPC API
+
+    U->>R: "Create a project for mobile app redesign and show me related tasks"
+    R->>R: Analyze intent
+    Note over R: Detect: Create + Organize + Display
+
+    R->>Ctx: Update context with request
+    R->>Cu: Create project object
+    Cu->>API: object.create({type: 'project', ...})
+    API-->>Cu: Created project
+    Cu->>Ctx: Store project ID
+    Cu-->>U: "Created 'Mobile App Redesign' project"
+
+    R->>Re: Find related tasks
+    Re->>API: search.semantic("mobile app tasks")
+    API-->>Re: Related tasks
+    Re->>Ctx: Store found tasks
+    Re-->>U: "Found 5 related tasks"
+
+    R->>B: Generate project view
+    B->>Ctx: Get project + tasks
+    B->>B: Generate UI component
+    B-->>U: Stream Kanban component
+
+    U-->>U: View rendered Kanban board

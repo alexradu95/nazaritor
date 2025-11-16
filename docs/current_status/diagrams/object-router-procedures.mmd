@@ -1,0 +1,32 @@
+graph LR
+    ObjectRouter[Object Router]
+
+    subgraph "Query Procedures (Read)"
+        Ping[ping<br/>Health check]
+        GetById[getById<br/>Fetch single object]
+        List[list<br/>Query with filters]
+    end
+
+    subgraph "Mutation Procedures (Write)"
+        Create[create<br/>New object]
+        Update[update<br/>Modify object]
+        Delete[delete<br/>Remove object]
+        Archive[archive<br/>Soft delete toggle]
+    end
+
+    ObjectRouter --> Ping
+    ObjectRouter --> GetById
+    ObjectRouter --> List
+    ObjectRouter --> Create
+    ObjectRouter --> Update
+    ObjectRouter --> Delete
+    ObjectRouter --> Archive
+
+    style ObjectRouter fill:#2196F3,stroke:#1976D2,stroke-width:3px
+    style Ping fill:#4CAF50
+    style GetById fill:#4CAF50
+    style List fill:#4CAF50
+    style Create fill:#FF9800
+    style Update fill:#FF9800
+    style Delete fill:#F44336
+    style Archive fill:#FF9800

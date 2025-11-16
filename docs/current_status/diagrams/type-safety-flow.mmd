@@ -1,0 +1,18 @@
+graph LR
+    ZodSchema[Zod Schema<br/>packages/schemas]
+    TSTypes[TypeScript Types<br/>packages/types]
+    tRPCProc[tRPC Procedure<br/>apps/api]
+    ReactHooks[React Hooks<br/>apps/web]
+
+    ZodSchema -->|infer| TSTypes
+    ZodSchema -->|validate| tRPCProc
+    TSTypes -->|type| tRPCProc
+    tRPCProc -->|generate| ReactHooks
+
+    ReactHooks -->|call| tRPCProc
+    tRPCProc -->|validate| ZodSchema
+
+    style ZodSchema fill:#FF9800
+    style TSTypes fill:#2196F3
+    style tRPCProc fill:#4CAF50
+    style ReactHooks fill:#4CAF50

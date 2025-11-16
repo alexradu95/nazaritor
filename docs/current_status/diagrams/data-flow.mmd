@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant User as User (Browser)
+    participant UI as React UI
+    participant tRPC as tRPC Client
+    participant API as Hono Server
+    participant Router as tRPC Router
+    participant Zod as Zod Validator
+    participant ORM as Drizzle ORM
+    participant DB as SQLite
+
+    User->>UI: Interact with UI
+    UI->>tRPC: Call typed procedure
+    Note over tRPC: Auto-generated hooks<br/>Full type safety
+    tRPC->>API: HTTP POST /trpc
+    API->>Router: Route to procedure
+    Router->>Zod: Validate input
+
+    alt Validation fails
+        Zod-->>User: 400 Bad Request
+    else Validation passes
+        Zod->>Router: Input valid
+        Router->>ORM: Type-safe query
+        ORM->>DB: SQL query
+        DB-->>ORM: Result set
+        ORM-->>Router: Typed objects
+        Router-->>tRPC: JSON response
+        tRPC-->>UI: Typed data
+        UI-->>User: Render update
+    end
+
+    Note over User,DB: End-to-end type safety<br/>from UI to database

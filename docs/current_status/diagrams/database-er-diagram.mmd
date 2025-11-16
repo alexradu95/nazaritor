@@ -1,0 +1,26 @@
+erDiagram
+    OBJECTS ||--o{ RELATIONS : "has"
+    OBJECTS ||--o{ RELATIONS : "references"
+
+    OBJECTS {
+        text id PK "nanoid, unique identifier"
+        text type "project|task|daily_note|etc"
+        text title "Object title"
+        text content "Main content (optional)"
+        jsonb properties "Type-specific properties"
+        jsonb metadata "Created/updated timestamps, etc"
+        boolean archived "Soft delete flag"
+        boolean favorite "User favorite flag"
+        array tags "Array of tag strings"
+        timestamp created_at "Auto-generated"
+        timestamp updated_at "Auto-updated on change"
+    }
+
+    RELATIONS {
+        text id PK "nanoid, unique identifier"
+        text from_object_id FK "Source object"
+        text to_object_id FK "Target object"
+        text relation_type "parent_of|related_to|depends_on|etc"
+        jsonb metadata "Relation metadata (optional)"
+        timestamp created_at "Auto-generated"
+    }

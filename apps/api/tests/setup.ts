@@ -39,22 +39,23 @@ async function setupTestDatabase() {
   db.run('PRAGMA foreign_keys = ON')
 
   try {
-    // Read migration file using Bun native API
-    const migrationPath = join(
-      import.meta.dir,
-      '../../../packages/database/migrations/0000_initial.sql'
-    )
+    // Read all migration files in order
+    const migrationsDir = join(import.meta.dir, '../../../packages/database/migrations')
 
-    const migrationFile = Bun.file(migrationPath)
-    if (!(await migrationFile.exists())) {
-      throw new Error(`Migration file not found: ${migrationPath}`)
+    const migrationFiles = ['0000_initial.sql', '0001_add_constraints.sql']
+
+    for (const file of migrationFiles) {
+      const migrationPath = join(migrationsDir, file)
+      const migrationFile = Bun.file(migrationPath)
+
+      if (!(await migrationFile.exists())) {
+        throw new Error(`Migration file not found: ${migrationPath}`)
+      }
+
+      const migration = await migrationFile.text()
+      db.exec(migration)
+      console.log(`  ✅ ${file} applied`)
     }
-
-    const migration = await migrationFile.text()
-
-    // Execute the entire migration file at once
-    // This handles multi-line statements like triggers correctly
-    db.exec(migration)
 
     console.log('✅ Test database schema created')
     db.close()

@@ -33,7 +33,7 @@ This guide explains how to use Next.js in a **minimal way** to build the AI-firs
 ```bash
 # Create Next.js app
 cd apps/web
-pnpm create next-app@latest .
+bun create next-app@latest .
 
 # Configuration during setup:
 # - TypeScript: Yes
@@ -678,10 +678,10 @@ const [trpcClient] = useState(() =>
 
 ```bash
 # Run TypeScript compiler
-pnpm type-check
+bun type-check
 
 # Auto-fix lint issues
-pnpm lint:fix
+bun lint:fix
 ```
 
 ---

@@ -716,8 +716,8 @@ type ListObjectsOutput = inferProcedureOutput<AppRouter['object']['list']>
 For third-party API access, generate OpenAPI docs:
 
 ```bash
-pnpm add @trpc/server@next
-pnpm add trpc-openapi
+bun add @trpc/server@next
+bun add trpc-openapi
 ```
 
 This allows non-TypeScript clients to consume the API.

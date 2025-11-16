@@ -10,10 +10,9 @@ This guide covers everything you need to start developing the AI-First Knowledge
 
 ### Required Software
 
-- **Bun** v1.0.0+ (runtime for backend)
-- **Node.js** v20+ (for Next.js frontend)
-- **pnpm** v8+ (package manager)
-- **SQLite** (database)
+- **Bun** v1.0+ (runtime and package manager)
+- **Node.js** v20+ (for Next.js frontend, optional)
+- **SQLite** (embedded database, no installation needed)
 - **Git** (version control)
 
 ### Optional Tools
@@ -35,11 +34,11 @@ cd nazaritor
 ### 2. Install Dependencies
 
 ```bash
-# Install pnpm globally (if not installed)
-npm install -g pnpm
+# Install Bun (if not installed)
+curl -fsSL https://bun.sh/install | bash
 
 # Install all dependencies (monorepo)
-pnpm install
+bun install
 ```
 
 ### 3. Setup Environment Variables
@@ -94,7 +93,7 @@ DATABASE_URL=./custom/path/nazaritor.db
 
 ```bash
 cd apps/api
-pnpm db:migrate
+bun db:migrate
 ```
 
 ---
@@ -107,7 +106,7 @@ pnpm db:migrate
 
 ```bash
 # From root directory
-pnpm dev
+bun dev
 ```
 
 This starts:
@@ -118,20 +117,20 @@ This starts:
 
 ```bash
 # Backend only
-pnpm --filter api dev
+bun --filter api dev
 
 # Frontend only
-pnpm --filter web dev
+bun --filter web dev
 ```
 
 ### Production Build
 
 ```bash
 # Build all apps
-pnpm build
+bun build
 
 # Start production servers
-pnpm start
+bun start
 ```
 
 ---
@@ -142,53 +141,53 @@ pnpm start
 
 ```bash
 # Development
-pnpm dev               # Run all apps in dev mode
-pnpm build             # Build all apps
-pnpm lint              # Lint all code
-pnpm type-check        # TypeScript type checking
-pnpm test              # Run all tests
-pnpm test:watch        # Run tests in watch mode
+bun dev               # Run all apps in dev mode
+bun build             # Build all apps
+bun lint              # Lint all code
+bun type-check        # TypeScript type checking
+bun test              # Run all tests
+bun test:watch        # Run tests in watch mode
 
 # Clean
-pnpm clean             # Remove all build artifacts and node_modules
+bun clean             # Remove all build artifacts and node_modules
 ```
 
 ### Backend Scripts (apps/api)
 
 ```bash
 # Development
-pnpm dev               # Start backend in dev mode
-pnpm build             # Build for production
-pnpm start             # Start production server
+bun dev               # Start backend in dev mode
+bun build             # Build for production
+bun start             # Start production server
 
 # Database
-pnpm db:generate       # Generate migration from schema changes
-pnpm db:migrate        # Run migrations
-pnpm db:push           # Push schema changes directly (dev only)
-pnpm db:studio         # Open Drizzle Studio (database UI)
-pnpm db:seed           # Seed database with sample data
+bun db:generate       # Generate migration from schema changes
+bun db:migrate        # Run migrations
+bun db:push           # Push schema changes directly (dev only)
+bun db:studio         # Open Drizzle Studio (database UI)
+bun db:seed           # Seed database with sample data
 
 # Testing
-pnpm test              # Run tests
-pnpm test:watch        # Run tests in watch mode
-pnpm test:coverage     # Run tests with coverage report
+bun test              # Run tests
+bun test:watch        # Run tests in watch mode
+bun test:coverage     # Run tests with coverage report
 ```
 
 ### Frontend Scripts (apps/web)
 
 ```bash
 # Development
-pnpm dev               # Start Next.js dev server
-pnpm build             # Build for production
-pnpm start             # Start production server
+bun dev               # Start Next.js dev server
+bun build             # Build for production
+bun start             # Start production server
 
 # Testing
-pnpm test              # Run tests
-pnpm test:watch        # Run tests in watch mode
+bun test              # Run tests
+bun test:watch        # Run tests in watch mode
 
 # Linting
-pnpm lint              # Run ESLint
-pnpm lint:fix          # Auto-fix lint issues
+bun lint              # Run ESLint
+bun lint:fix          # Auto-fix lint issues
 ```
 
 ---
@@ -224,7 +223,7 @@ describe('createProject', () => {
 })
 ```
 
-Run test: `pnpm test` → **Test fails** (Red)
+Run test: `bun test` → **Test fails** (Red)
 
 #### 2. Green - Write Minimal Code to Pass
 
@@ -255,7 +254,7 @@ export function createProject(input: {
 }
 ```
 
-Run test: `pnpm test` → **Test passes** (Green)
+Run test: `bun test` → **Test passes** (Green)
 
 #### 3. Refactor - Improve Code Quality
 
@@ -291,7 +290,7 @@ function createDefaultMetadata() {
 }
 ```
 
-Run test: `pnpm test` → **Test still passes** (Refactor)
+Run test: `bun test` → **Test still passes** (Refactor)
 
 ### Test Structure
 
@@ -421,7 +420,7 @@ export const objects = pgTable('objects', {
 
 ```bash
 cd apps/api
-pnpm db:generate
+bun db:generate
 ```
 
 This creates a SQL migration file in `apps/api/src/db/migrations/`.
@@ -445,7 +444,7 @@ CREATE TABLE "objects" (
 #### 4. Run Migration
 
 ```bash
-pnpm db:migrate
+bun db:migrate
 ```
 
 ### Database Studio
@@ -453,7 +452,7 @@ pnpm db:migrate
 Drizzle Studio provides a visual interface for your database:
 
 ```bash
-pnpm db:studio
+bun db:studio
 ```
 
 Opens at http://localhost:4983
@@ -634,7 +633,7 @@ cd apps/api && bun src/db/migrate.ts
 # Database locked error
 # 1. Stop dev server (Ctrl+C)
 # 2. Close Drizzle Studio if open
-# 3. Restart: pnpm dev
+# 3. Restart: bun dev
 ```
 
 #### tRPC Type Errors
@@ -642,19 +641,19 @@ cd apps/api && bun src/db/migrate.ts
 ```bash
 # Rebuild backend to update types
 cd apps/api
-pnpm build
+bun build
 
 # Restart frontend dev server
 cd apps/web
-pnpm dev
+bun dev
 ```
 
 #### Module Not Found
 
 ```bash
 # Clean and reinstall dependencies
-pnpm clean
-pnpm install
+bun clean
+bun install
 ```
 
 ---
@@ -720,7 +719,7 @@ vercel
 
 **Development Workflow:**
 1. Setup environment (database, env variables)
-2. Run tests in watch mode (`pnpm test:watch`)
+2. Run tests in watch mode (`bun test:watch`)
 3. Write failing test (Red)
 4. Implement feature (Green)
 5. Refactor code (Refactor)
@@ -728,11 +727,11 @@ vercel
 7. Create PR for review
 
 **Key Commands:**
-- `pnpm dev` - Run all apps
-- `pnpm test` - Run all tests
-- `pnpm db:studio` - Open database UI
-- `pnpm lint` - Check code quality
-- `pnpm type-check` - Verify types
+- `bun dev` - Run all apps
+- `bun test` - Run all tests
+- `bun db:studio` - Open database UI
+- `bun lint` - Check code quality
+- `bun type-check` - Verify types
 
 **Remember:**
 - TDD is non-negotiable

@@ -16,7 +16,7 @@ The object system is the core of the knowledge management platform. Everything i
 
 ## Implemented Object Types
 
-Currently implemented (as of 2024):
+Currently implemented (as of January 2025):
 - ✅ `project` - Projects with status, priority, dates
 - ✅ `task` - Tasks with status, scheduling, recurrence
 - ✅ `resource` - Knowledge resources (articles, notes, snippets, ideas)
@@ -27,9 +27,9 @@ Currently implemented (as of 2024):
 - ✅ `page` - Wiki-style pages with table of contents
 - ✅ `custom` - User-defined custom object types
 
-**Future types** (documented but not yet implemented):
-- ⏳ `habit` - Habit tracking
-- ⏳ `financial-entry` - Financial transactions
+**Future types** (planned but not yet implemented):
+- ⏳ `habit` - Habit tracking with streaks and check-ins
+- ⏳ `financial-entry` - Financial transactions and wealth tracking
 
 **Note:** `resource` consolidates what was previously planned as separate `knowledge-bit` and `personal-bit` types.
 
@@ -59,19 +59,31 @@ export const BaseObjectSchema = z.object({
   title: z.string().min(1).max(500),
   content: z.string().optional(), // Rich text content (Lexical JSON)
   properties: z.record(z.string(), PropertyValueSchema), // Dynamic properties
-  relations: z.array(RelationSchema),
+  archived: z.boolean().default(false), // Top-level for indexing
   metadata: z.object({
     createdAt: z.date(),
     updatedAt: z.date(),
     createdBy: z.string().uuid().optional(), // User ID (future)
     tags: z.array(z.string()),
-    archived: z.boolean().default(false),
     favorited: z.boolean().default(false),
   }),
 })
 
 export type BaseObject = z.infer<typeof BaseObjectSchema>
+
+// Extended schema for when relations are loaded
+export const ObjectWithRelationsSchema = BaseObjectSchema.extend({
+  relations: z.array(RelationSchema),
+})
+
+export type ObjectWithRelations = z.infer<typeof ObjectWithRelationsSchema>
 ```
+
+**Note on Relations:**
+- Relations are NOT stored in the BaseObject schema
+- Relations are stored in a separate `relations` table
+- Use `ObjectWithRelationsSchema` when you need to include relations
+- Use relation helper functions: `createRelation()`, `findRelations()`, `getRelatedObjectIds()`
 
 ---
 
@@ -93,7 +105,6 @@ export const PropertyTypeEnum = z.enum([
   'checkbox',       // Boolean checkbox
   'url',            // URL input with validation
   'email',          // Email input with validation
-  'relation',       // Link to another object
   'file',           // File upload
   'ai-generated',   // AI-generated content
   'currency',       // Money amount
@@ -183,70 +194,38 @@ export type DailyNote = z.infer<typeof DailyNoteSchema>
 - Identify patterns across multiple days
 - Generate weekly/monthly summaries
 
-### 3. Knowledge Bit
+### 3. Resource
 
-Small, atomic pieces of knowledge or information (like Zettelkasten notes).
+Resources are flexible knowledge items that can be articles, notes, snippets, quotes, or ideas. This consolidates what was previously separate `knowledge-bit` and `personal-bit` types.
 
 ```typescript
-export const KnowledgeBitSchema = BaseObjectSchema.extend({
-  type: z.literal('knowledge-bit'),
+export const ResourceSchema = BaseObjectSchema.extend({
+  type: z.literal('resource'),
   properties: z.object({
+    resourceType: z.enum(['article', 'note', 'snippet', 'quote', 'idea']).optional(),
     category: z.string().optional(), // e.g., "Programming", "Philosophy"
-    source: z.string().optional(), // Where this knowledge came from
+    source: z.string().optional(), // Where this resource came from
     sourceUrl: z.string().url().optional(),
+    author: z.string().optional(),
     dateAdded: z.date(),
-    confidence: z.enum(['low', 'medium', 'high']).optional(), // How certain you are
-    relatedBits: z.array(z.string().uuid()).optional(), // Other knowledge bits
-    references: z.array(z.string().uuid()).optional(), // Weblink or page IDs
+    language: z.string().optional(), // For code snippets
+    codeLanguage: z.string().optional(), // For code snippets
   }).passthrough(),
 })
 
-export type KnowledgeBit = z.infer<typeof KnowledgeBitSchema>
+export type Resource = z.infer<typeof ResourceSchema>
 ```
 
 **AI Enhancements:**
 - Extract entities and concepts from content
-- Suggest related knowledge bits
+- Suggest related resources
 - Automatically categorize based on content
-- Generate connections to other bits
+- Generate connections to other resources
 - Summarize complex knowledge
 - Generate quiz questions for spaced repetition
+- Identify patterns and insights
 
-### 4. Personal Bit
-
-Private, personal information, thoughts, or reflections.
-
-```typescript
-export const PersonalBitSchema = BaseObjectSchema.extend({
-  type: z.literal('personal-bit'),
-  properties: z.object({
-    category: z.enum([
-      'thought',
-      'reflection',
-      'dream',
-      'goal',
-      'memory',
-      'idea',
-      'feeling',
-      'other',
-    ]).optional(),
-    privacy: z.enum(['private', 'shared']).default('private'),
-    emotionalTone: z.enum(['positive', 'neutral', 'negative']).optional(),
-    dateRecorded: z.date(),
-    relatedPeople: z.array(z.string().uuid()).optional(), // Person object IDs
-  }).passthrough(),
-})
-
-export type PersonalBit = z.infer<typeof PersonalBitSchema>
-```
-
-**AI Enhancements:**
-- Sentiment analysis (emotional tone detection)
-- Pattern recognition across personal bits
-- Privacy-aware suggestions
-- Generate personal insights and trends
-
-### 5. Weblink
+### 4. Weblink
 
 Saved URLs and bookmarks with metadata.
 
@@ -274,10 +253,10 @@ export type Weblink = z.infer<typeof WeblinkSchema>
 - Auto-fetch title, description, and thumbnail
 - Extract main content and summarize
 - Categorize based on content
-- Suggest related weblinks or knowledge bits
+- Suggest related weblinks or resources
 - Generate notes from article content
 
-### 6. Person
+### 5. Person
 
 People in your network - contacts, collaborators, friends, etc.
 
@@ -315,7 +294,7 @@ export type Person = z.infer<typeof PersonSchema>
 - Generate conversation starters based on shared interests
 - Track interaction history
 
-### 7. Page
+### 6. Page
 
 Long-form documents or wiki-style pages.
 
@@ -350,59 +329,7 @@ export type Page = z.infer<typeof PageSchema>
 - Check for broken links
 - Generate citations and references
 
-### 8. Financial Entry
-
-Track personal finances - current wealth, transactions, budgets.
-
-```typescript
-export const FinancialEntrySchema = BaseObjectSchema.extend({
-  type: z.literal('financial-entry'),
-  properties: z.object({
-    entryType: z.enum(['snapshot', 'transaction', 'budget', 'goal']),
-
-    // For snapshots (current wealth status)
-    totalAssets: z.number().optional(),
-    totalLiabilities: z.number().optional(),
-    netWorth: z.number().optional(), // Auto-calculated: assets - liabilities
-
-    // For transactions
-    amount: z.number().optional(),
-    currency: z.string().default('USD'),
-    category: z.string().optional(), // e.g., "Food", "Rent", "Income"
-    transactionType: z.enum(['income', 'expense', 'transfer']).optional(),
-    transactionDate: z.date().optional(),
-    account: z.string().optional(), // Bank account name
-
-    // For budgets
-    budgetPeriod: z.enum(['weekly', 'monthly', 'yearly']).optional(),
-    budgetAmount: z.number().optional(),
-    spent: z.number().optional(),
-    remaining: z.number().optional(), // Auto-calculated
-
-    // For goals
-    targetAmount: z.number().optional(),
-    currentAmount: z.number().optional(),
-    targetDate: z.date().optional(),
-
-    // Common fields
-    date: z.date(), // Date of entry
-    notes: z.string().optional(),
-    attachments: z.array(z.string()).optional(), // Receipt images, etc.
-  }).passthrough(),
-})
-
-export type FinancialEntry = z.infer<typeof FinancialEntrySchema>
-```
-
-**AI Enhancements:**
-- Categorize transactions automatically
-- Identify spending patterns and trends
-- Suggest budget optimizations
-- Forecast future wealth based on trends
-- Alert on unusual spending
-- Generate financial reports
-
-### 9. Task
+### 7. Task
 
 Actionable items with deadlines, priorities, and statuses.
 
@@ -441,7 +368,7 @@ export type Task = z.infer<typeof TaskSchema>
 - Auto-prioritize based on deadlines and importance
 - Generate task descriptions from brief input
 
-### 10. Calendar Entry
+### 8. Calendar Entry
 
 Events, meetings, and scheduled time blocks.
 
@@ -483,44 +410,52 @@ export type CalendarEntry = z.infer<typeof CalendarEntrySchema>
 - Generate meeting agendas
 - Create tasks from meeting notes
 
-### 11. Habit
+---
+
+## Future Object Types
+
+These object types are planned but not yet implemented in the current version:
+
+### Habit
 
 Repeating behaviors to track and build.
 
-```typescript
-export const HabitSchema = BaseObjectSchema.extend({
-  type: z.literal('habit'),
-  properties: z.object({
-    frequency: z.enum(['daily', 'weekly', 'monthly']),
-    targetCount: z.number().default(1), // How many times per frequency period
-    currentStreak: z.number().default(0), // Days/weeks in a row
-    longestStreak: z.number().default(0),
-    totalCompletions: z.number().default(0),
-    startDate: z.date(),
-    endDate: z.date().optional(), // If habit has an end goal
-    timeOfDay: z.enum(['morning', 'afternoon', 'evening', 'anytime']).optional(),
-    reminderTime: z.string().optional(), // HH:MM format
-    difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
-    category: z.string().optional(), // e.g., "Health", "Productivity"
-    checkIns: z.array(z.object({
-      date: z.date(),
-      completed: z.boolean(),
-      note: z.string().optional(),
-    })).optional(),
-    archived: z.boolean().default(false),
-  }).passthrough(),
-})
+**Planned Properties:**
+- Frequency (daily, weekly, monthly)
+- Target count per period
+- Streak tracking (current and longest)
+- Total completions
+- Start/end dates
+- Time of day preference
+- Reminder settings
+- Difficulty level
+- Check-in history
 
-export type Habit = z.infer<typeof HabitSchema>
-```
-
-**AI Enhancements:**
+**Planned AI Enhancements:**
 - Suggest habit stacking (pair with existing habits)
 - Analyze completion patterns
 - Identify optimal times for habit execution
 - Generate motivation and tips
 - Predict likelihood of success
 - Suggest habit modifications for better adherence
+
+### Financial Entry
+
+Track personal finances - current wealth, transactions, budgets, and goals.
+
+**Planned Entry Types:**
+- **Snapshots**: Current wealth status (assets, liabilities, net worth)
+- **Transactions**: Income, expenses, transfers with categorization
+- **Budgets**: Period-based budget tracking with spending analysis
+- **Goals**: Financial targets with progress tracking
+
+**Planned AI Enhancements:**
+- Categorize transactions automatically
+- Identify spending patterns and trends
+- Suggest budget optimizations
+- Forecast future wealth based on trends
+- Alert on unusual spending
+- Generate financial reports
 
 ---
 
@@ -558,10 +493,10 @@ export type Relation = z.infer<typeof RelationSchema>
 
 - **Project → Task**: `contains` relation (project contains multiple tasks)
 - **Task → Person**: `assigned-to` relation
-- **Knowledge Bit → Knowledge Bit**: `references` relation
+- **Resource → Resource**: `references` relation (one resource references another)
 - **Daily Note → Task**: `references` relation (mentioned in daily note)
-- **Weblink → Knowledge Bit**: `related-to` relation (source of knowledge)
-- **Habit → Calendar Entry**: `related-to` relation (habit check-in scheduled)
+- **Weblink → Resource**: `related-to` relation (source of knowledge)
+- **Calendar Entry → Task**: `related-to` relation (meeting related to task)
 
 ---
 
@@ -595,39 +530,60 @@ export const CustomObjectTypeSchema = z.object({
 
 ---
 
-## Database Schema (Drizzle)
+## Database Schema (Drizzle + SQLite)
+
+The system uses **SQLite** with **Bun's native driver** for embedded, serverless storage.
 
 ```typescript
 // packages/database/src/schema/objects.ts
-import { pgTable, uuid, text, jsonb, timestamp, boolean } from 'drizzle-orm/pg-core'
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { sql } from 'drizzle-orm'
 
-export const objects = pgTable('objects', {
-  id: uuid('id').primaryKey().defaultRandom(),
+export const objects = sqliteTable('objects', {
+  id: text('id').primaryKey(), // UUID as text
   type: text('type').notNull(), // 'project', 'task', etc.
   title: text('title').notNull(),
   content: text('content'), // Rich text JSON (Lexical)
-  properties: jsonb('properties').notNull().default({}), // Flexible properties
-  metadata: jsonb('metadata').notNull().default({
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    tags: [],
-    archived: false,
-    favorited: false,
-  }),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  archived: boolean('archived').notNull().default(false),
-})
+  properties: text('properties', { mode: 'json' }).notNull().default('{}'), // JSON as text
+  metadata: text('metadata', { mode: 'json' }), // JSON as text
+  archived: integer('archived', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+}, (table) => ({
+  // Single-column indexes
+  typeIdx: index('type_idx').on(table.type),
+  archivedIdx: index('archived_idx').on(table.archived),
+  createdAtIdx: index('created_at_idx').on(table.createdAt),
+  updatedAtIdx: index('updated_at_idx').on(table.updatedAt),
 
-export const relations = pgTable('relations', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  fromObjectId: uuid('from_object_id').notNull().references(() => objects.id, { onDelete: 'cascade' }),
-  toObjectId: uuid('to_object_id').notNull().references(() => objects.id, { onDelete: 'cascade' }),
+  // Composite indexes for common query patterns
+  typeArchivedIdx: index('idx_objects_type_archived').on(table.type, table.archived),
+  archivedTypeIdx: index('idx_objects_archived_type').on(table.archived, table.type),
+  typeUpdatedAtIdx: index('idx_objects_type_updated_at').on(table.type, table.updatedAt),
+}))
+
+export const relations = sqliteTable('relations', {
+  id: text('id').primaryKey(), // UUID as text
+  fromObjectId: text('from_object_id').notNull().references(() => objects.id, { onDelete: 'cascade' }),
+  toObjectId: text('to_object_id').notNull().references(() => objects.id, { onDelete: 'cascade' }),
   relationType: text('relation_type').notNull(),
-  metadata: jsonb('metadata').notNull().default({}),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+  metadata: text('metadata', { mode: 'json' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+}, (table) => ({
+  // Composite indexes for relation queries
+  fromTypeIdx: index('idx_relations_from_type').on(table.fromObjectId, table.relationType),
+  toTypeIdx: index('idx_relations_to_type').on(table.toObjectId, table.relationType),
+  fromToIdx: index('idx_relations_from_to').on(table.fromObjectId, table.toObjectId),
+}))
 ```
+
+**Key Features:**
+- **UUID as text**: SQLite doesn't have native UUID type
+- **JSON as text**: Properties and metadata stored as JSON text
+- **Timestamps as integers**: Unix timestamps for efficient querying
+- **Composite indexes**: 6 indexes for optimized query performance
+- **Foreign key constraints**: Cascade deletes maintain referential integrity
+- **CHECK constraints**: Database-level validation (added via migrations)
 
 ---
 
@@ -656,11 +612,14 @@ export const relations = pgTable('relations', {
 
 The object system provides:
 
-- **11 default object types** covering knowledge, tasks, people, and personal management
-- **Flexible property system** for custom fields
-- **Relational graph** for interconnected knowledge
+- **9 implemented object types** covering knowledge, tasks, people, and personal management
+- **2 future object types** planned (habit tracking, financial entries)
+- **14 property types** with discriminated union validation
+- **Flexible property system** for custom fields per object
+- **Relational graph** for interconnected knowledge (11 relation types)
 - **AI-first design** for natural language interaction
-- **Type-safe schemas** with Zod validation
+- **Type-safe schemas** with Zod validation at runtime and compile-time
+- **SQLite storage** with composite indexes for performance
 - **Extensible** for future custom object types
 
 This foundation enables a powerful, AI-driven knowledge management system that adapts to the user's needs.

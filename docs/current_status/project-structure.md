@@ -2,7 +2,7 @@
 
 ## Monorepo Organization
 
-This project uses a **Turborepo** monorepo structure to organize code, share dependencies, and maintain type safety across the entire stack.
+This project uses **Bun workspaces** to organize code, share dependencies, and maintain type safety across the entire stack.
 
 ```
 nazaritor/
@@ -15,9 +15,8 @@ nazaritor/
 │   ├── ui/                     # Shared React components
 │   └── database/               # Drizzle schemas & migrations
 ├── docs/                       # Project documentation
-├── turbo.json                  # Turborepo configuration
-├── package.json                # Root package.json
-├── pnpm-workspace.yaml         # pnpm workspaces config
+├── package.json                # Root package.json with Bun workspaces
+├── bun.lockb                   # Bun lockfile
 └── README.md                   # Project overview
 ```
 
@@ -327,12 +326,12 @@ import { trpc } from '@/lib/trpc'
 
 ## Package Management
 
-### Tool: **pnpm**
+### Tool: **bun**
 
-Use pnpm for package management (faster, better disk space usage).
+Use bun for package management (faster, better disk space usage).
 
 ```yaml
-# pnpm-workspace.yaml
+# bun-workspace.yaml
 packages:
   - "apps/*"
   - "packages/*"
@@ -342,14 +341,14 @@ packages:
 
 ```bash
 # Install all dependencies
-pnpm install
+bun install
 
 # Add dependency to specific app
-pnpm --filter api add hono
-pnpm --filter web add next
+bun --filter api add hono
+bun --filter web add next
 
 # Add dependency to shared package
-pnpm --filter @repo/schemas add zod
+bun --filter @repo/schemas add zod
 ```
 
 ---

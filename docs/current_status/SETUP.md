@@ -5,22 +5,22 @@ The Nazaritor monorepo has been initialized with Bun workspaces and all necessar
 ## What's Been Created
 
 ### Root Configuration
-- ✅ `package.json` - Root package with workspace configuration and build scripts
-- ✅ `pnpm-workspace.yaml` - Workspace configuration (Bun compatible)
+- ✅ `package.json` - Root package with Bun workspace configuration and build scripts
 - ✅ `tsconfig.json` - Base TypeScript configuration
 - ✅ `.gitignore` - Git ignore rules
 - ✅ `.prettierrc` - Code formatting configuration
-- ✅ `bun.lockb` - Bun's binary lockfile
+- ✅ `bun.lockb` - Bun's binary lockfile (replaces pnpm-lock.yaml)
 
 ### Packages
 
 #### `packages/schemas`
-- All 11 object type Zod schemas:
-  - Project, Task, Daily Note, Knowledge Bit, Personal Bit
-  - Weblink, Person, Page, Financial Entry
-  - Calendar Entry, Habit
-- Property and Relation schemas
-- Fully type-safe with Zod
+- 9 implemented object type Zod schemas:
+  - Project, Task, Daily Note, Resource (knowledge)
+  - Weblink, Person, Page, Calendar Entry, Custom
+- 2 future object types (Habit, Financial Entry)
+- 14 property type schemas with discriminated unions
+- 11 relation type schemas
+- Fully type-safe with Zod runtime validation
 
 #### `packages/types`
 - TypeScript types inferred from Zod schemas
@@ -153,37 +153,34 @@ nazaritor/
 │           ├── schema/
 │           └── client.ts
 ├── docs/                    # Comprehensive documentation
-├── package.json             # Root package
-├── pnpm-workspace.yaml
-└── turbo.json
+├── package.json             # Root package with Bun workspaces
+└── bun.lockb                # Bun lockfile
 ```
 
 ## Available Scripts
 
 ### Root Level
 ```bash
-pnpm dev          # Run all apps in development
-pnpm build        # Build all apps
-pnpm test         # Run all tests
-pnpm lint         # Lint all code
-pnpm type-check   # TypeScript type checking
-pnpm clean        # Clean all build artifacts
+bun dev          # Run backend API
+bun dev:web      # Run frontend web app
+bun build        # Build all apps
+bun test         # Run all tests
+bun lint         # Lint all code (if configured)
+bun type-check   # TypeScript type checking
 ```
 
 ### Backend (`apps/api`)
 ```bash
-pnpm dev          # Start backend dev server
-pnpm db:generate  # Generate migration
-pnpm db:migrate   # Run migrations
-pnpm db:studio    # Open Drizzle Studio
-pnpm test         # Run tests
+bun dev          # Start backend dev server
+bun run migrate  # Run database migrations
+bun test         # Run tests
 ```
 
 ### Frontend (`apps/web`)
 ```bash
-pnpm dev          # Start Next.js dev server
-pnpm build        # Build for production
-pnpm lint         # Run ESLint
+bun dev          # Start Next.js dev server
+bun build        # Build for production
+bun lint         # Run ESLint
 ```
 
 ## Development Workflow
@@ -210,13 +207,13 @@ pnpm lint         # Run ESLint
 
 Now that the monorepo is set up, follow the **[Implementation Roadmap](docs/roadmap.md)** to start building:
 
-### Phase 1 - Week 3-6: Core Object System
-- Implement create, update, delete procedures
-- Add all 11 object types
-- Build relation system
-- Write comprehensive tests
+### Phase 2: Frontend Development & AI Integration
+- Build object list and detail views
+- Implement relations visualization
+- Add AI agents (Curator, Researcher, Builder)
+- Full-text search and graph visualization
 
-See `docs/roadmap.md` for the full 6-month plan.
+See `docs/future/roadmap.md` for the full 6-month plan.
 
 ## Documentation
 
@@ -233,12 +230,12 @@ All documentation is in the `docs/` directory:
 
 ### Dependencies Won't Install
 ```bash
-# Clear pnpm cache
-pnpm store prune
+# Clear Bun cache
+bun pm cache rm
 
 # Reinstall
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
+rm -rf node_modules bun.lockb
+bun install
 ```
 
 ### Database File Issues
@@ -253,16 +250,16 @@ cd apps/api && bun src/db/migrate.ts
 # Database locked error (close all connections)
 # 1. Stop dev server (Ctrl+C)
 # 2. Close Drizzle Studio if open
-# 3. Restart: pnpm dev
+# 3. Restart: bun dev
 ```
 
 ### TypeScript Errors
 ```bash
 # Rebuild all packages
-pnpm build
+bun run build
 
 # Check types
-pnpm type-check
+bun run type-check
 ```
 
 ### Port Already in Use

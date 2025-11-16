@@ -11,29 +11,10 @@ import { protectedProcedure } from '../middleware/errorHandler'
 import { z } from 'zod'
 import { QuerySchema } from '@repo/schemas'
 import { objects } from '@repo/database'
-import type { Object as DbObject } from '@repo/database'
-import { eq, and, desc } from 'drizzle-orm'
+import { eq, desc, and } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { executeQuery, testQuery } from '../../services/query-executor'
-
-// Helper to convert DB object to BaseObject
-function dbToBaseObject(obj: DbObject) {
-  return {
-    id: obj.id,
-    type: obj.type,
-    title: obj.title,
-    content: obj.content || '',
-    properties: obj.properties || {},
-    archived: obj.archived,
-    metadata: {
-      ...(obj.metadata || {}),
-      createdAt: obj.createdAt,
-      updatedAt: obj.updatedAt,
-      tags: obj.metadata?.tags || [],
-      favorited: obj.metadata?.favorited || false,
-    },
-  }
-}
+import { dbToBaseObject } from '../../utils/db-helpers'
 
 export const queryRouter = router({
   // Create a new query
@@ -67,7 +48,7 @@ export const queryRouter = router({
         })
       }
 
-      return dbToBaseObject(result[0]) as z.infer<typeof QuerySchema>
+      return dbToBaseObject(result[0]!) as z.infer<typeof QuerySchema>
     }),
 
   // List all queries
@@ -94,7 +75,7 @@ export const queryRouter = router({
 
       if (result.length === 0) return null
 
-      return dbToBaseObject(result[0]) as z.infer<typeof QuerySchema>
+      return dbToBaseObject(result[0]!) as z.infer<typeof QuerySchema>
     }),
 
   // Update query
@@ -159,7 +140,7 @@ export const queryRouter = router({
         })
       }
 
-      return dbToBaseObject(result[0]) as z.infer<typeof QuerySchema>
+      return dbToBaseObject(result[0]!) as z.infer<typeof QuerySchema>
     }),
 
   // Delete query
@@ -204,7 +185,7 @@ export const queryRouter = router({
         })
       }
 
-      const query = dbToBaseObject(result[0]) as z.infer<typeof QuerySchema>
+      const query = dbToBaseObject(result[0]!) as z.infer<typeof QuerySchema>
 
       // Execute the query using query-executor service
       return executeQuery(query, ctx.db)

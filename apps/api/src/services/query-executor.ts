@@ -84,9 +84,9 @@ export async function executeQuery(
   // Apply sorting
   if (sort) {
     const sortField = objects[sort.field as keyof typeof objects]
-    if (sortField) {
+    if (sortField && typeof sortField === 'object' && 'dataType' in sortField) {
       queryBuilder = queryBuilder.orderBy(
-        sort.order === 'asc' ? asc(sortField) : desc(sortField)
+        sort.order === 'asc' ? asc(sortField as any) : desc(sortField as any)
       ) as any
     }
   } else {

@@ -9,30 +9,11 @@
 import { router } from '../init'
 import { protectedProcedure } from '../middleware/errorHandler'
 import { z } from 'zod'
-import { CollectionSchema, BaseObjectSchema } from '@repo/schemas'
+import { CollectionSchema } from '@repo/schemas'
 import { objects, relations } from '@repo/database'
-import type { Object as DbObject } from '@repo/database'
 import { eq, and, desc } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-
-// Helper to convert DB object to BaseObject
-function dbToBaseObject(obj: DbObject) {
-  return {
-    id: obj.id,
-    type: obj.type,
-    title: obj.title,
-    content: obj.content || '',
-    properties: obj.properties || {},
-    archived: obj.archived,
-    metadata: {
-      ...(obj.metadata || {}),
-      createdAt: obj.createdAt,
-      updatedAt: obj.updatedAt,
-      tags: obj.metadata?.tags || [],
-      favorited: obj.metadata?.favorited || false,
-    },
-  }
-}
+import { dbToBaseObject } from '../../utils/db-helpers'
 
 export const collectionRouter = router({
   // Create a new collection
@@ -66,7 +47,7 @@ export const collectionRouter = router({
         })
       }
 
-      return dbToBaseObject(result[0]) as z.infer<typeof CollectionSchema>
+      return dbToBaseObject(result[0]!) as z.infer<typeof CollectionSchema>
     }),
 
   // List all collections (optionally filter by object type)
@@ -116,7 +97,7 @@ export const collectionRouter = router({
 
       if (result.length === 0) return null
 
-      return dbToBaseObject(result[0]) as z.infer<typeof CollectionSchema>
+      return dbToBaseObject(result[0]!) as z.infer<typeof CollectionSchema>
     }),
 
   // Add object to collection (create 'member_of' relation)
@@ -158,8 +139,8 @@ export const collectionRouter = router({
       }
 
       // Validate object type matches collection's objectType
-      const collection = dbToBaseObject(collectionObject[0]) as z.infer<typeof CollectionSchema>
-      const targetObj = dbToBaseObject(targetObject[0])
+      const collection = dbToBaseObject(collectionObject[0]!) as z.infer<typeof CollectionSchema>
+      const targetObj = dbToBaseObject(targetObject[0]!)
 
       if (collection.properties.objectType !== targetObj.type) {
         throw new TRPCError({

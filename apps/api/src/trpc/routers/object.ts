@@ -2,33 +2,11 @@ import { router, publicProcedure } from '../init'
 import { protectedProcedure } from '../middleware/errorHandler'
 import { z } from 'zod'
 import { BaseObjectSchema } from '@repo/schemas'
-import type { Metadata } from '@repo/schemas'
 import { objects, relations } from '@repo/database'
-import type { Object as DbObject } from '@repo/database'
-import { eq, desc, and } from 'drizzle-orm'
+import { eq, desc, and, sql } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { getOrCreateDailyNote, getTodayDateString } from '../../services/daily-note-helpers'
-
-// Helper function to convert DB object to BaseObject schema
-// Note: Relations are NOT included in BaseObject - they must be fetched separately
-// using the relations helper functions from @repo/database
-function dbToBaseObject(obj: DbObject) {
-  return {
-    id: obj.id,
-    type: obj.type,
-    title: obj.title,
-    content: obj.content || '',
-    properties: obj.properties || {},
-    archived: obj.archived, // Top-level archived field (indexed for queries)
-    metadata: {
-      ...(obj.metadata || {}),
-      createdAt: obj.createdAt,
-      updatedAt: obj.updatedAt,
-      tags: obj.metadata?.tags || [],
-      favorited: obj.metadata?.favorited || false,
-    },
-  }
-}
+import { dbToBaseObject } from '../../utils/db-helpers'
 
 export const objectRouter = router({
   // Health check for object router
@@ -78,8 +56,8 @@ export const objectRouter = router({
 
           // Create 'created_on' relation
           await ctx.db.insert(relations).values({
-            fromObjectId: newObject.id,
-            toObjectId: dailyNote.id,
+            fromObjectId: newObject!.id,
+            toObjectId: dailyNote!.id,
             relationType: 'created_on',
             metadata: {
               auto: true, // Mark as auto-created
@@ -91,7 +69,7 @@ export const objectRouter = router({
         }
       }
 
-      return dbToBaseObject(newObject)
+      return dbToBaseObject(newObject!)
     }),
 
   // Get object by ID
@@ -107,7 +85,7 @@ export const objectRouter = router({
 
       if (result.length === 0) return null
 
-      return dbToBaseObject(result[0])
+      return dbToBaseObject(result[0]!)
     }),
 
   // List objects with filters
@@ -212,7 +190,7 @@ export const objectRouter = router({
         })
       }
 
-      return dbToBaseObject(result[0])
+      return dbToBaseObject(result[0]!)
     }),
 
   // Delete object
@@ -272,7 +250,7 @@ export const objectRouter = router({
         .where(eq(objects.id, input.id))
         .returning()
 
-      return dbToBaseObject(result[0])
+      return dbToBaseObject(result[0]!)
     }),
 
   // TIMELINE QUERIES: Query objects by creation/modification date
@@ -285,7 +263,7 @@ export const objectRouter = router({
       const result = await ctx.db
         .select()
         .from(objects)
-        .where(eq(sql`${objects.id}`, sql`(SELECT id FROM objects WHERE created_date = ${input.date})`))
+        .where(sql`created_date = ${input.date}`)
         .orderBy(desc(objects.createdAt))
 
       return result.map(dbToBaseObject)
@@ -299,7 +277,7 @@ export const objectRouter = router({
       const result = await ctx.db
         .select()
         .from(objects)
-        .where(eq(sql`${objects.id}`, sql`(SELECT id FROM objects WHERE updated_date = ${input.date})`))
+        .where(sql`updated_date = ${input.date}`)
         .orderBy(desc(objects.updatedAt))
 
       return result.map(dbToBaseObject)

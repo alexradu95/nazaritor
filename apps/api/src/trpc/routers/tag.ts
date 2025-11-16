@@ -8,30 +8,11 @@
 import { router } from '../init'
 import { protectedProcedure } from '../middleware/errorHandler'
 import { z } from 'zod'
-import { TagSchema, BaseObjectSchema } from '@repo/schemas'
+import { TagSchema } from '@repo/schemas'
 import { objects, relations } from '@repo/database'
-import type { Object as DbObject } from '@repo/database'
-import { eq, and, desc, sql } from 'drizzle-orm'
+import { eq, and, desc } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-
-// Helper to convert DB object to BaseObject
-function dbToBaseObject(obj: DbObject) {
-  return {
-    id: obj.id,
-    type: obj.type,
-    title: obj.title,
-    content: obj.content || '',
-    properties: obj.properties || {},
-    archived: obj.archived,
-    metadata: {
-      ...(obj.metadata || {}),
-      createdAt: obj.createdAt,
-      updatedAt: obj.updatedAt,
-      tags: obj.metadata?.tags || [],
-      favorited: obj.metadata?.favorited || false,
-    },
-  }
-}
+import { dbToBaseObject } from '../../utils/db-helpers'
 
 export const tagRouter = router({
   // Create a new tag
@@ -69,7 +50,7 @@ export const tagRouter = router({
         })
       }
 
-      return dbToBaseObject(result[0]) as z.infer<typeof TagSchema>
+      return dbToBaseObject(result[0]!) as z.infer<typeof TagSchema>
     }),
 
   // List all tags
@@ -96,7 +77,7 @@ export const tagRouter = router({
 
       if (result.length === 0) return null
 
-      return dbToBaseObject(result[0]) as z.infer<typeof TagSchema>
+      return dbToBaseObject(result[0]!) as z.infer<typeof TagSchema>
     }),
 
   // Tag an object (create 'tagged_with' relation)

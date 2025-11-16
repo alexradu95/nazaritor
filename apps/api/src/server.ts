@@ -34,9 +34,11 @@ app.use(
 // Start server
 const port = parseInt(process.env.PORT || '3001')
 
-export default {
+const server: { port: number; fetch: typeof app.fetch } = {
   port,
-  fetch: app.fetch,
+  fetch: app.fetch.bind(app),
 }
+
+export default server
 
 console.log(`🚀 Server running at http://localhost:${port}`)

@@ -26,8 +26,7 @@ describe('Object Router', () => {
   })
 
   afterAll(async () => {
-    // Cleanup - close SQLite database
-    sqlite.close()
+    // Database will be cleaned up by test runner
   })
 
   beforeEach(async () => {

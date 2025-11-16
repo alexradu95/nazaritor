@@ -66,7 +66,7 @@ describe('Object Router', () => {
       expect(result.metadata.createdAt).toBeInstanceOf(Date)
       expect(result.metadata.updatedAt).toBeInstanceOf(Date)
       expect(result.metadata.tags).toEqual([])
-      expect(result.metadata.archived).toBe(false)
+      expect(result.archived).toBe(false) // Top-level archived field
     })
 
     test('should create a new task object', async () => {
@@ -304,8 +304,7 @@ describe('Object Router', () => {
         archived: true,
       })
 
-      expect(archived.archived).toBe(true)
-      expect(archived.metadata.archived).toBe(true)
+      expect(archived.archived).toBe(true) // Only top-level archived field exists
     })
   })
 })

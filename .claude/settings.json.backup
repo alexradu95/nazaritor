@@ -118,7 +118,6 @@
     "SHADCN_STYLE": "new-york",
     "SHADCN_BASE_COLOR": "zinc",
     "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
-    "DATABASE_URL": "postgresql://user:pass@host/dbname?sslmode=require",
     "OPENAI_API_KEY": "sk-your-openai-api-key-here",
     "MCP_SERVER_PORT": "3000",
     "LOG_LEVEL": "info",

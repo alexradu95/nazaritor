@@ -15,7 +15,7 @@ describe('Database Constraints', () => {
           title: 'Test',
           content: '',
           properties: {},
-          metadata: { tags: [], archived: false },
+          metadata: { tags: [] },
         })
       }).toThrow()
     })
@@ -27,7 +27,7 @@ describe('Database Constraints', () => {
           title: '   ', // whitespace only
           content: '',
           properties: {},
-          metadata: { tags: [], archived: false },
+          metadata: { tags: [] },
         })
       }).toThrow()
     })
@@ -40,7 +40,7 @@ describe('Database Constraints', () => {
           title: 'Valid Project',
           content: 'Content',
           properties: {},
-          metadata: { tags: [], archived: false },
+          metadata: { tags: [] },
         })
         .returning()
 
@@ -58,7 +58,7 @@ describe('Database Constraints', () => {
           title: 'Project',
           content: '',
           properties: {},
-          metadata: { tags: [], archived: false },
+          metadata: { tags: [] },
         })
         .returning()
 
@@ -69,7 +69,7 @@ describe('Database Constraints', () => {
           title: 'Task',
           content: '',
           properties: {},
-          metadata: { tags: [], archived: false },
+          metadata: { tags: [] },
         })
         .returning()
 
@@ -90,7 +90,7 @@ describe('Database Constraints', () => {
           title: 'Project',
           content: '',
           properties: {},
-          metadata: { tags: [], archived: false },
+          metadata: { tags: [] },
         })
         .returning()
 
@@ -111,7 +111,7 @@ describe('Database Constraints', () => {
           title: 'Project',
           content: '',
           properties: {},
-          metadata: { tags: [], archived: false },
+          metadata: { tags: [] },
         })
         .returning()
 
@@ -122,7 +122,7 @@ describe('Database Constraints', () => {
           title: 'Task',
           content: '',
           properties: {},
-          metadata: { tags: [], archived: false },
+          metadata: { tags: [] },
         })
         .returning()
 

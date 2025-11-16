@@ -1,3 +1,3 @@
 export * from './schema'
-export { db, sqlite } from './client'
+export { db, sqlite, resetDatabase } from './client'
 export * from './relations'

@@ -1,12 +1,14 @@
 import { router, publicProcedure } from '../init'
 import { z } from 'zod'
 import { BaseObjectSchema } from '@repo/schemas'
+import type { Metadata } from '@repo/schemas'
 import { objects } from '@repo/database'
+import type { Object as DbObject } from '@repo/database'
 import { eq, desc, and } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 
 // Helper function to convert DB object to BaseObject schema
-function dbToBaseObject(obj: any) {
+function dbToBaseObject(obj: DbObject) {
   return {
     id: obj.id,
     type: obj.type,
@@ -14,13 +16,12 @@ function dbToBaseObject(obj: any) {
     content: obj.content || '',
     properties: obj.properties || {},
     relations: [],
-    archived: obj.archived, // Top-level archived field
+    archived: obj.archived, // Top-level archived field (indexed for queries)
     metadata: {
       ...(obj.metadata || {}),
       createdAt: obj.createdAt,
       updatedAt: obj.updatedAt,
       tags: obj.metadata?.tags || [],
-      archived: obj.archived,
       favorited: obj.metadata?.favorited || false,
     },
   }
@@ -48,7 +49,6 @@ export const objectRouter = router({
           properties: input.properties || {},
           metadata: {
             tags: [],
-            archived: false,
             favorited: false,
           },
           archived: false,
@@ -148,7 +148,14 @@ export const objectRouter = router({
       }
 
       // Build update values
-      const updateValues: any = {
+      type UpdateValues = {
+        updatedAt: Date
+        title?: string
+        content?: string
+        properties?: Record<string, unknown>
+      }
+
+      const updateValues: UpdateValues = {
         updatedAt: new Date(),
       }
 
@@ -233,10 +240,6 @@ export const objectRouter = router({
         .update(objects)
         .set({
           archived: input.archived,
-          metadata: {
-            ...(existing[0].metadata as any),
-            archived: input.archived,
-          },
           updatedAt: new Date(),
         })
         .where(eq(objects.id, input.id))

@@ -17,7 +17,7 @@ async function createTestObject(title: string, type: string = 'project') {
       title,
       content: '',
       properties: {},
-      metadata: { tags: [], archived: false },
+      metadata: { tags: [] },
     })
     .returning()
   return object

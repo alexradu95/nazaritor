@@ -19,7 +19,6 @@ export const MetadataSchema = z.object({
   updatedAt: z.coerce.date(),
   createdBy: z.string().uuid().optional(),
   tags: z.array(z.string()),
-  archived: z.boolean().default(false),
   favorited: z.boolean().default(false),
 })
 

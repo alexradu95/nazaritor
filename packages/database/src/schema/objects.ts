@@ -9,7 +9,7 @@ export const objects = sqliteTable(
     title: text('title').notNull(),
     content: text('content'),
     properties: text('properties', { mode: 'json' }).notNull().default('{}'),
-    metadata: text('metadata', { mode: 'json' }).notNull().default('{"tags":[],"archived":false,"favorited":false}'),
+    metadata: text('metadata', { mode: 'json' }).notNull().default('{"tags":[],"favorited":false}'),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
     archived: integer('archived', { mode: 'boolean' }).notNull().default(false),

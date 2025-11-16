@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS objects (
   title TEXT NOT NULL,
   content TEXT,
   properties TEXT NOT NULL DEFAULT '{}',
-  metadata TEXT NOT NULL DEFAULT '{"tags":[],"archived":false,"favorited":false}',
+  metadata TEXT NOT NULL DEFAULT '{"tags":[],"favorited":false}',
   created_at INTEGER NOT NULL DEFAULT (unixepoch()),
   updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
   archived INTEGER NOT NULL DEFAULT 0

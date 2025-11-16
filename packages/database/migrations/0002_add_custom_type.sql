@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS objects_new (
   title TEXT NOT NULL CHECK (length(trim(title)) > 0),
   content TEXT,
   properties TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(properties)),
-  metadata TEXT NOT NULL DEFAULT '{"tags":[],"archived":false,"favorited":false}' CHECK (json_valid(metadata)),
+  metadata TEXT NOT NULL DEFAULT '{"tags":[],"favorited":false}' CHECK (json_valid(metadata)),
   created_at INTEGER NOT NULL DEFAULT (unixepoch()),
   updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
   archived INTEGER NOT NULL DEFAULT 0 CHECK (archived IN (0, 1))

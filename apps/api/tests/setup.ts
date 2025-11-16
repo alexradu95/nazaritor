@@ -16,6 +16,11 @@ delete process.env.DATABASE_URL
 process.env.DATABASE_URL = testDbPath
 process.env.NODE_ENV = 'test'
 
+// Reset any previously initialized database clients
+// This is critical for tests that might have already imported the database module
+import { resetDatabase } from '@repo/database'
+resetDatabase()
+
 console.log('Test environment initialized')
 console.log('Test database:', process.env.DATABASE_URL)
 
@@ -42,7 +47,12 @@ async function setupTestDatabase() {
     // Read all migration files in order
     const migrationsDir = join(import.meta.dir, '../../../packages/database/migrations')
 
-    const migrationFiles = ['0000_initial.sql', '0001_add_constraints.sql', '0002_add_custom_type.sql']
+    const migrationFiles = [
+      '0000_initial.sql',
+      '0001_add_constraints.sql',
+      '0002_add_custom_type.sql',
+      '0003_unique_daily_note_dates.sql',
+    ]
 
     for (const file of migrationFiles) {
       const migrationPath = join(migrationsDir, file)

@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { BaseObjectSchema } from './base-object'
-import { PriorityEnum } from './project'
 
 // Enums for common task property values
 export const TaskStatusEnum = z.enum(['todo', 'in-progress', 'waiting', 'done', 'cancelled'])
@@ -32,4 +31,4 @@ export const TaskSchema = BaseObjectSchema.extend({
 
 export type Task = z.infer<typeof TaskSchema>
 export type TaskStatus = z.infer<typeof TaskStatusEnum>
-export type Priority = z.infer<typeof PriorityEnum>
+// Note: Priority type is exported from project.ts (shared enum)

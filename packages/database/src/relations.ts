@@ -42,6 +42,10 @@ export const createRelation = async (
 
   const [relation] = await db.insert(relations).values(newRelation).returning()
 
+  if (!relation) {
+    throw new Error('Failed to create relation')
+  }
+
   return relation
 }
 

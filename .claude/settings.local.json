@@ -3,7 +3,8 @@
     "allow": [
       "Bash(bun test)",
       "Bash(bun -e:*)",
-      "Bash(bun run test:*)"
+      "Bash(bun run test:*)",
+      "Bash(bun:*)"
     ],
     "deny": [],
     "ask": []

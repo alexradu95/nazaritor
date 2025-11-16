@@ -36,9 +36,8 @@ Nazaritor is an AI-first application where users interact primarily through chat
 - **Search**: Fuse.js (fuzzy) + AI semantic search
 
 ### Monorepo
-- **Tool**: Turborepo
-- **Package Manager**: pnpm
-- **Testing**: Vitest (TDD throughout)
+- **Package Manager**: Bun (fast, native)
+- **Testing**: Bun test (TDD throughout)
 
 ## Architecture
 
@@ -84,11 +83,10 @@ nazaritor/
 
 ### Prerequisites
 
-- **Bun** v1.0.0+
-- **Node.js** v20+
-- **pnpm** v8+
+- **Bun** v1.0.0+ - [Install here](https://bun.sh)
+- **Node.js** v20+ (for Next.js frontend only) - [Install here](https://nodejs.org)
 
-No database server needed - SQLite works out of the box!
+No database server needed - SQLite works out of the box! Bun handles both runtime and package management.
 
 ### Installation
 
@@ -98,7 +96,7 @@ git clone <repository-url>
 cd nazaritor
 
 # Install dependencies
-pnpm install
+bun install
 
 # Setup environment variables
 cp apps/api/.env.example apps/api/.env
@@ -111,7 +109,9 @@ bun src/db/migrate.ts
 
 # Start development servers
 cd ../..
-pnpm dev
+bun run dev        # Backend API
+# OR
+bun run dev:web    # Frontend (in separate terminal)
 ```
 
 The backend will be available at http://localhost:3001 and the frontend at http://localhost:3000.
@@ -121,20 +121,23 @@ The backend will be available at http://localhost:3001 and the frontend at http:
 ### Running the Project
 
 ```bash
-# Run all apps
-pnpm dev
+# From root directory
+bun run dev          # Start backend API
+bun run dev:web      # Start frontend
+bun run build        # Build all packages and apps
+bun run test         # Run tests
+bun run test:watch   # Run tests in watch mode
 
-# Run backend only
-pnpm --filter api dev
+# From apps/api directory
+cd apps/api
+bun run dev          # Start backend dev server
+bun run test         # Run backend tests
+bun run db:studio    # Open Drizzle Studio
 
-# Run frontend only
-pnpm --filter web dev
-
-# Run tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
+# From apps/web directory
+cd apps/web
+bun run dev          # Start frontend dev server
+bun run build        # Build for production
 ```
 
 ### Test-Driven Development

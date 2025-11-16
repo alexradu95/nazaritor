@@ -7,19 +7,18 @@ This guide will get you up and running in under 5 minutes with SQLite!
 Before starting, make sure you have:
 
 - **Bun** v1.0.0+ - [Install here](https://bun.sh)
-- **Node.js** v20+ - [Install here](https://nodejs.org)
-- **pnpm** v8+ - `npm install -g pnpm`
+- **Node.js** v20+ (for Next.js frontend only) - [Install here](https://nodejs.org)
 
-That's it! No database server needed - we use SQLite with Bun's native support.
+That's it! No database server needed - we use SQLite with Bun's native support. Bun handles both the runtime and package management.
 
 ## Step 1: Install Dependencies
 
 ```bash
 # From the root directory
-pnpm install
+bun install
 ```
 
-This will install all dependencies for the monorepo (backend, frontend, and packages).
+This will install all dependencies for the monorepo (backend, frontend, and packages) using Bun's fast package manager.
 
 **Expected output:** `Packages: +XXX` and no errors
 
@@ -121,13 +120,16 @@ If tests pass, everything is working perfectly!
 # Go back to root directory
 cd ../..
 
-# Start both backend and frontend
-pnpm dev
+# Start backend API
+bun run dev
+
+# Or start frontend (in a separate terminal)
+bun run dev:web
 ```
 
 This starts:
-- **Backend API**: http://localhost:3001
-- **Frontend Web**: http://localhost:3000
+- **Backend API**: http://localhost:3001 (with `bun run dev`)
+- **Frontend Web**: http://localhost:3000 (with `bun run dev:web`)
 
 **Expected output:**
 ```
@@ -271,15 +273,15 @@ rm ./data/nazaritor.test.db
 bun test
 
 # Rebuild packages
-pnpm build
+bun run build
 ```
 
 ### Module Not Found Errors
 
 ```bash
 # Clean install
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
+bun run clean
+bun install
 ```
 
 ### Database Locked Error
@@ -288,7 +290,7 @@ pnpm install
 # If you get "database is locked", close all connections:
 # 1. Stop the dev server (Ctrl+C)
 # 2. Close Drizzle Studio if open
-# 3. Restart: pnpm dev
+# 3. Restart: bun run dev
 ```
 
 ---
@@ -330,20 +332,23 @@ Read the comprehensive documentation:
 ### Running Commands
 
 ```bash
-# Root level (runs all apps)
-pnpm dev          # Start all apps
-pnpm build        # Build all apps
-pnpm test         # Run all tests
-pnpm lint         # Lint all code
+# Root level
+bun run dev          # Start backend API
+bun run dev:web      # Start frontend
+bun run build        # Build all packages and apps
+bun run test         # Run all tests
+bun run format       # Format code with Prettier
 
 # Backend only
-pnpm --filter api dev
-pnpm --filter api test
-pnpm --filter api db:studio  # Open database UI
+cd apps/api
+bun run dev          # Start dev server
+bun run test         # Run tests
+bun run db:studio    # Open database UI
 
 # Frontend only
-pnpm --filter web dev
-pnpm --filter web build
+cd apps/web
+bun run dev          # Start dev server
+bun run build        # Build for production
 ```
 
 ### TDD Workflow
@@ -380,6 +385,11 @@ You now have a fully functional system with:
 - ✅ **Type-safe full-stack** with shared schemas
 
 **Total setup time:** ~5 minutes (no database server needed!)
+
+**Tooling:**
+- ✅ **Bun** - Fast package manager + runtime
+- ✅ **TypeScript** - Type safety everywhere
+- ✅ **Simple build scripts** - No complex orchestration needed
 
 Ready to build! For detailed implementation guidance, see `docs/roadmap.md`.
 

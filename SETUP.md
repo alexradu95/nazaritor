@@ -1,16 +1,16 @@
 # Monorepo Setup Complete! 🎉
 
-The Nazaritor monorepo has been initialized with Turborepo, pnpm workspaces, and all necessary configurations.
+The Nazaritor monorepo has been initialized with Bun workspaces and all necessary configurations.
 
 ## What's Been Created
 
 ### Root Configuration
-- ✅ `package.json` - Root package with Turborepo scripts
-- ✅ `pnpm-workspace.yaml` - pnpm workspace configuration
-- ✅ `turbo.json` - Turborepo pipeline configuration
+- ✅ `package.json` - Root package with workspace configuration and build scripts
+- ✅ `pnpm-workspace.yaml` - Workspace configuration (Bun compatible)
 - ✅ `tsconfig.json` - Base TypeScript configuration
 - ✅ `.gitignore` - Git ignore rules
 - ✅ `.prettierrc` - Code formatting configuration
+- ✅ `bun.lockb` - Bun's binary lockfile
 
 ### Packages
 
@@ -56,9 +56,11 @@ The Nazaritor monorepo has been initialized with Turborepo, pnpm workspaces, and
 ### 1. Install Dependencies
 
 ```bash
-# Install all dependencies
-pnpm install
+# Install all dependencies (using Bun)
+bun install
 ```
+
+This installs all workspace dependencies across the monorepo. Bun is 20-100x faster than npm/pnpm!
 
 ### 2. Setup Environment Variables
 
@@ -90,17 +92,19 @@ The database file will be automatically created at `apps/api/data/nazaritor.db` 
 cd apps/api
 
 # Generate initial migration
-pnpm db:generate
+bun run db:generate
 
 # Run migrations
-pnpm db:migrate
+bun src/db/migrate.ts
 ```
 
 ### 5. Start Development Servers
 
 ```bash
-# From root directory - runs both backend and frontend
-pnpm dev
+# From root directory
+bun run dev        # Start backend API
+# OR
+bun run dev:web    # Start frontend (in separate terminal)
 ```
 
 This will start:

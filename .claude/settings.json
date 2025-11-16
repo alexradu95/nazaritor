@@ -114,8 +114,6 @@
     ]
   },
   "env": {
-    "NODE_ENV": "development",
-    "NEXT_PUBLIC_APP_ENV": "development",
     "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
     "DATABASE_URL": "postgresql://user:pass@host/dbname?sslmode=require",
     "OPENAI_API_KEY": "sk-your-openai-api-key-here"

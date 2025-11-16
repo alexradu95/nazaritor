@@ -71,35 +71,18 @@ cp apps/web/.env.example apps/web/.env.local
 # Edit apps/web/.env.local and configure frontend settings
 ```
 
-### 3. Setup Database
+### 3. Setup Database (SQLite - Zero Configuration!)
 
-You'll need PostgreSQL running. Choose one of these options:
+**No setup needed!** SQLite works out of the box with Bun's native support.
 
-**Option A: Local PostgreSQL**
-```bash
-# Install PostgreSQL (if not installed)
-# On macOS:
-brew install postgresql@15
-brew services start postgresql@15
+The database file will be automatically created at `apps/api/data/nazaritor.db` when you run migrations.
 
-# Create database
-createdb nazaritor
-```
-
-**Option B: Docker**
-```bash
-docker run --name nazaritor-db \
-  -e POSTGRES_USER=user \
-  -e POSTGRES_PASSWORD=password \
-  -e POSTGRES_DB=nazaritor \
-  -p 5432:5432 \
-  -d postgres:15
-```
-
-**Option C: Cloud (Recommended for quick start)**
-- Sign up for [Neon](https://neon.tech) or [Supabase](https://supabase.com)
-- Create a database
-- Copy the connection string to `apps/api/.env`
+**Benefits:**
+- ✅ Zero configuration - no database server to install
+- ✅ Single file database - easy to backup and share
+- ✅ Bun native - ultra-fast performance
+- ✅ Perfect for local development
+- ✅ Production ready for appropriate use cases
 
 ### 4. Run Database Migrations
 
@@ -254,13 +237,19 @@ rm -rf node_modules pnpm-lock.yaml
 pnpm install
 ```
 
-### Database Connection Failed
+### Database File Issues
 ```bash
-# Check PostgreSQL is running
-pg_isready
+# Check if database exists
+ls -la apps/api/data/
 
-# Verify connection string in .env
-echo $DATABASE_URL
+# Reset database (warning: deletes all data)
+rm apps/api/data/nazaritor.db
+cd apps/api && bun src/db/migrate.ts
+
+# Database locked error (close all connections)
+# 1. Stop dev server (Ctrl+C)
+# 2. Close Drizzle Studio if open
+# 3. Restart: pnpm dev
 ```
 
 ### TypeScript Errors

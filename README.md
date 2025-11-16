@@ -23,7 +23,7 @@ Nazaritor is an AI-first application where users interact primarily through chat
 - **Runtime**: Bun (faster than Node.js, native TypeScript)
 - **Framework**: Hono (ultra-fast, edge-ready)
 - **API**: tRPC v11 (end-to-end type safety)
-- **Database**: PostgreSQL + Drizzle ORM
+- **Database**: SQLite (Bun native) + Drizzle ORM
 - **AI**: OpenAI/Anthropic SDK with multi-agent orchestration
 - **Validation**: Zod schemas
 
@@ -47,7 +47,7 @@ Nazaritor is an AI-first application where users interact primarily through chat
 │         Backend API (Hono + tRPC)            │
 │  - Object system (CRUD)                      │
 │  - Multi-agent AI orchestration              │
-│  - PostgreSQL database                       │
+│  - SQLite database (Bun native)              │
 └─────────────────┬───────────────────────────┘
                   │ tRPC (Type-safe)
         ┌─────────┴─────────┬───────────┬──────┐
@@ -87,7 +87,8 @@ nazaritor/
 - **Bun** v1.0.0+
 - **Node.js** v20+
 - **pnpm** v8+
-- **PostgreSQL** v15+
+
+No database server needed - SQLite works out of the box!
 
 ### Installation
 
@@ -104,9 +105,9 @@ cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env.local
 # Edit .env files with your configuration
 
-# Run database migrations
+# Run database migrations (creates SQLite database)
 cd apps/api
-pnpm db:migrate
+bun src/db/migrate.ts
 
 # Start development servers
 cd ../..

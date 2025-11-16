@@ -1,29 +1,67 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import { migrate } from 'drizzle-orm/postgres-js/migrator'
-import postgres from 'postgres'
+import { Database } from 'bun:sqlite'
+import { readFileSync, existsSync, mkdirSync } from 'fs'
+import { dirname, join } from 'path'
 
-const connectionString = process.env.DATABASE_URL
+const dbPath = process.env.DATABASE_URL || './data/nazaritor.db'
 
-if (!connectionString) {
-  console.error('DATABASE_URL is not set')
-  process.exit(1)
+// Ensure data directory exists
+const dir = dirname(dbPath)
+if (!existsSync(dir)) {
+  mkdirSync(dir, { recursive: true })
 }
 
-const migrationClient = postgres(connectionString, { max: 1 })
-
-async function main() {
+async function migrate() {
   console.log('Running migrations...')
+  console.log(`Database path: ${dbPath}`)
 
-  await migrate(drizzle(migrationClient), {
-    migrationsFolder: '../../packages/database/migrations',
-  })
+  // Create SQLite database
+  const db = new Database(dbPath, { create: true })
 
-  console.log('Migrations complete!')
-  process.exit(0)
+  // Enable foreign keys
+  db.run('PRAGMA foreign_keys = ON')
+
+  try {
+    // Read migration file
+    const migrationPath = join(
+      import.meta.dir,
+      '../../../packages/database/migrations/0000_initial.sql'
+    )
+
+    if (!existsSync(migrationPath)) {
+      console.error('Migration file not found:', migrationPath)
+      process.exit(1)
+    }
+
+    const migration = readFileSync(migrationPath, 'utf-8')
+
+    // Split by semicolon and execute each statement
+    const statements = migration
+      .split(';')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0 && !s.startsWith('--'))
+
+    for (const statement of statements) {
+      db.run(statement)
+    }
+
+    console.log('✅ Migrations complete!')
+    console.log(`Database created at: ${dbPath}`)
+
+    // Verify tables were created
+    const tables = db
+      .query("SELECT name FROM sqlite_master WHERE type='table'")
+      .all() as { name: string }[]
+
+    console.log('Tables created:', tables.map((t) => t.name).join(', '))
+
+    db.close()
+    process.exit(0)
+  } catch (err) {
+    console.error('Migration failed!')
+    console.error(err)
+    db.close()
+    process.exit(1)
+  }
 }
 
-main().catch((err) => {
-  console.error('Migration failed!')
-  console.error(err)
-  process.exit(1)
-})
+migrate()

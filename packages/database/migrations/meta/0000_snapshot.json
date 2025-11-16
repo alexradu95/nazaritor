@@ -1,0 +1,154 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "objects": {
+      "name": "objects",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "properties": {
+          "name": "properties",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{\"tags\": [], \"archived\": false, \"favorited\": false}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "archived": {
+          "name": "archived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {
+        "type_idx": {
+          "columns": ["type"]
+        },
+        "created_at_idx": {
+          "columns": ["created_at"]
+        },
+        "updated_at_idx": {
+          "columns": ["updated_at"]
+        },
+        "archived_idx": {
+          "columns": ["archived"]
+        }
+      }
+    },
+    "relations": {
+      "name": "relations",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "from_object_id": {
+          "name": "from_object_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_object_id": {
+          "name": "to_object_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "relation_type": {
+          "name": "relation_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "from_object_id_idx": {
+          "columns": ["from_object_id"]
+        },
+        "to_object_id_idx": {
+          "columns": ["to_object_id"]
+        },
+        "relation_type_idx": {
+          "columns": ["relation_type"]
+        }
+      },
+      "foreignKeys": {
+        "fk_from_object": {
+          "columns": ["from_object_id"],
+          "referencedTable": "objects",
+          "referencedColumns": ["id"],
+          "onDelete": "cascade"
+        },
+        "fk_to_object": {
+          "columns": ["to_object_id"],
+          "referencedTable": "objects",
+          "referencedColumns": ["id"],
+          "onDelete": "cascade"
+        }
+      }
+    }
+  }
+}

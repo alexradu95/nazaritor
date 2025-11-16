@@ -1,19 +1,20 @@
-import { pgTable, uuid, text, jsonb, timestamp, index } from 'drizzle-orm/pg-core'
+import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core'
+import { sql } from 'drizzle-orm'
 import { objects } from './objects'
 
-export const relations = pgTable(
+export const relations = sqliteTable(
   'relations',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    fromObjectId: uuid('from_object_id')
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    fromObjectId: text('from_object_id')
       .notNull()
       .references(() => objects.id, { onDelete: 'cascade' }),
-    toObjectId: uuid('to_object_id')
+    toObjectId: text('to_object_id')
       .notNull()
       .references(() => objects.id, { onDelete: 'cascade' }),
     relationType: text('relation_type').notNull(),
-    metadata: jsonb('metadata').notNull().default({}),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    metadata: text('metadata', { mode: 'json' }).notNull().default('{}'),
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
   },
   (table) => {
     return {

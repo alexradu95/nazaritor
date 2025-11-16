@@ -26,12 +26,12 @@ Build the core infrastructure and object system that everything else depends on.
 
 **Tasks:**
 - [x] Initialize Turborepo monorepo structure
-- [ ] Setup `apps/api` with Bun + Hono + tRPC
-- [ ] Configure PostgreSQL database (local or Neon)
-- [ ] Create `packages/schemas` with Zod schemas
-- [ ] Create `packages/database` with Drizzle ORM
+- [x] Setup `apps/api` with Bun + Hono + tRPC
+- [x] Configure SQLite database (Bun native - zero configuration)
+- [x] Create `packages/schemas` with Zod schemas
+- [x] Create `packages/database` with Drizzle ORM
 - [ ] Setup Vitest for testing
-- [ ] Create basic health check endpoint
+- [x] Create basic health check endpoint
 - [ ] Setup CI/CD pipeline (GitHub Actions)
 
 **Deliverable**: Working monorepo with backend server responding to health checks

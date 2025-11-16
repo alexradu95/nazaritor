@@ -1,21 +1,18 @@
-import { pgTable, uuid, text, jsonb, timestamp, boolean, index } from 'drizzle-orm/pg-core'
+import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core'
+import { sql } from 'drizzle-orm'
 
-export const objects = pgTable(
+export const objects = sqliteTable(
   'objects',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
     type: text('type').notNull(),
     title: text('title').notNull(),
     content: text('content'),
-    properties: jsonb('properties').notNull().default({}),
-    metadata: jsonb('metadata').notNull().default({
-      tags: [],
-      archived: false,
-      favorited: false,
-    }),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-    archived: boolean('archived').notNull().default(false),
+    properties: text('properties', { mode: 'json' }).notNull().default('{}'),
+    metadata: text('metadata', { mode: 'json' }).notNull().default('{"tags":[],"archived":false,"favorited":false}'),
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+    updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+    archived: integer('archived', { mode: 'boolean' }).notNull().default(false),
   },
   (table) => {
     return {

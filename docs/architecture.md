@@ -14,7 +14,7 @@ This document outlines the architectural decisions for the AI-First Knowledge Ma
 │  - Core business logic                       │
 │  - Object system (CRUD)                      │
 │  - Multi-agent AI orchestration              │
-│  - Database (PostgreSQL + Drizzle)           │
+│  - Database (SQLite + Drizzle)           │
 │  - Authentication & authorization            │
 │  - Real-time subscriptions                   │
 └─────────────────┬───────────────────────────┘
@@ -103,18 +103,17 @@ We chose a hybrid architecture with a platform-agnostic backend API and a Next.j
 - More boilerplate code
 - Higher risk of frontend/backend mismatches
 
-#### Database: **PostgreSQL + Drizzle ORM**
+#### Database: **SQLite + Drizzle ORM**
 
-**Decision:** Use PostgreSQL with Drizzle ORM
+**Decision:** Use SQLite with Drizzle ORM
 
 **Rationale:**
-- **PostgreSQL**:
-  - Robust, production-ready relational database
-  - Excellent support for JSON columns (needed for flexible object properties)
-  - JSONB indexing for fast queries on dynamic properties
-  - Powerful full-text search capabilities
-  - Strong consistency guarantees
-  - Great ecosystem and tooling
+- **SQLite**:
+  - ✅ Zero configuration - works out of the box
+  - ✅ Single file database (./data/nazaritor.db)
+  - ✅ Bun's native SQLite - ultra-fast
+  - ✅ No external dependencies
+  - ✅ 5-minute setup
 
 - **Drizzle ORM**:
   - Type-safe query builder (TypeScript-first)
@@ -312,12 +311,18 @@ const createObject = trpc.object.create.useMutation()
 
 ### Database Hosting
 
-**Options:**
+**Current:** SQLite (local file-based database)
+
+**Benefits:**
+- ✅ Zero configuration - no hosting needed
+- ✅ Single file database - easy deployment
+- ✅ Bun native - excellent performance
+- ✅ Perfect for single-user applications
+
+**Future Options (if scaling needed):**
+- **Turso** (distributed SQLite)
 - **Neon** (serverless PostgreSQL)
 - **Supabase** (PostgreSQL with extras)
-- **Railway** (PostgreSQL add-on)
-
-**Recommended:** Neon for free tier + excellent DX
 
 ---
 

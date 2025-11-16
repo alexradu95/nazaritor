@@ -1,16 +1,26 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
+import { drizzle } from 'drizzle-orm/bun-sqlite'
+import { Database } from 'bun:sqlite'
 import * as schema from './schema'
+import { existsSync, mkdirSync } from 'fs'
+import { dirname } from 'path'
 
-// Database connection
-const connectionString = process.env.DATABASE_URL || ''
+// Database file path
+const dbPath = process.env.DATABASE_URL || './data/nazaritor.db'
 
-if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is not set')
+// Ensure data directory exists
+const dir = dirname(dbPath)
+if (!existsSync(dir)) {
+  mkdirSync(dir, { recursive: true })
 }
 
-// Create postgres connection
-export const pool = postgres(connectionString, { max: 10 })
+// Create SQLite connection using Bun's native SQLite
+const sqlite = new Database(dbPath, { create: true })
+
+// Enable foreign keys
+sqlite.run('PRAGMA foreign_keys = ON')
 
 // Create drizzle instance
-export const db = drizzle(pool, { schema })
+export const db = drizzle(sqlite, { schema })
+
+// Export sqlite instance for migrations
+export { sqlite }

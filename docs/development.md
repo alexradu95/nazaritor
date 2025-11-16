@@ -13,12 +13,11 @@ This guide covers everything you need to start developing the AI-First Knowledge
 - **Bun** v1.0.0+ (runtime for backend)
 - **Node.js** v20+ (for Next.js frontend)
 - **pnpm** v8+ (package manager)
-- **PostgreSQL** v15+ (database)
+- **SQLite** (database)
 - **Git** (version control)
 
 ### Optional Tools
 
-- **Docker** (for containerized PostgreSQL)
 - **VSCode** (recommended IDE)
 - **GitHub Copilot** (AI pair programming)
 
@@ -50,8 +49,8 @@ Create `.env` files for backend and frontend:
 #### Backend `.env` (apps/api/.env)
 
 ```bash
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/nazaritor
+# Database (optional - defaults to ./data/nazaritor.db)
+DATABASE_URL=./data/nazaritor.db
 
 # AI Provider
 OPENAI_API_KEY=sk-...
@@ -73,35 +72,23 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 OPENAI_API_KEY=sk-...
 ```
 
-### 4. Setup Database
+### 4. Setup Database (SQLite - Zero Configuration!)
 
-#### Option A: Local PostgreSQL
+**No setup needed!** SQLite works out of the box with Bun's native support.
 
+The database file will be automatically created at `apps/api/data/nazaritor.db` when you run migrations.
+
+**Benefits:**
+- ✅ Zero configuration - no database server required
+- ✅ Single file database - easy to backup and share
+- ✅ Bun native SQLite - ultra-fast performance
+- ✅ Perfect for local development
+- ✅ Production ready for single-server deployments
+
+**Optional:** You can customize the database location by setting `DATABASE_URL` in `.env`:
 ```bash
-# Install PostgreSQL (if not installed)
-# macOS
-brew install postgresql@15
-brew services start postgresql@15
-
-# Create database
-createdb nazaritor
+DATABASE_URL=./custom/path/nazaritor.db
 ```
-
-#### Option B: Docker
-
-```bash
-# Run PostgreSQL in Docker
-docker run --name nazaritor-db \
-  -e POSTGRES_USER=user \
-  -e POSTGRES_PASSWORD=password \
-  -e POSTGRES_DB=nazaritor \
-  -p 5432:5432 \
-  -d postgres:15
-```
-
-#### Option C: Cloud (Neon, Supabase)
-
-Sign up for [Neon](https://neon.tech) or [Supabase](https://supabase.com) and use their connection string in `DATABASE_URL`.
 
 ### 5. Run Database Migrations
 
@@ -631,14 +618,23 @@ lsof -ti:3000 | xargs kill -9
 lsof -ti:3001 | xargs kill -9
 ```
 
-#### Database Connection Failed
+#### Database Issues
 
 ```bash
-# Check PostgreSQL is running
-pg_isready
+# Check if database file exists
+ls -la apps/api/data/
 
-# Check connection string in .env
+# View database path being used
 echo $DATABASE_URL
+
+# Reset database (warning: deletes all data)
+rm apps/api/data/nazaritor.db
+cd apps/api && bun src/db/migrate.ts
+
+# Database locked error
+# 1. Stop dev server (Ctrl+C)
+# 2. Close Drizzle Studio if open
+# 3. Restart: pnpm dev
 ```
 
 #### tRPC Type Errors

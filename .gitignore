@@ -46,11 +46,14 @@ yarn-error.log*
 # OS
 Thumbs.db
 
-# Database
+# Database (SQLite)
 *.db
 *.db-journal
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
+data/
 
 # Logs
 logs

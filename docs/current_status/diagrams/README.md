@@ -17,7 +17,7 @@ This directory contains Mermaid diagrams visualizing the Nazaritor architecture,
 
 ### Object System
 
-- **[object-type-hierarchy.mmd](./object-type-hierarchy.mmd)** - All 11 object types inheriting from BaseObject
+- **[object-type-hierarchy.mmd](./object-type-hierarchy.mmd)** - All 8 object types inheriting from BaseObject
 - **[object-relationships.mmd](./object-relationships.mmd)** - How different object types relate to each other
 - **[object-lifecycle.mmd](./object-lifecycle.mmd)** - State machine showing object lifecycle
 - **[property-types.mmd](./property-types.mmd)** - 15 available property types for objects

@@ -18,11 +18,11 @@
 ### ✅ Shared Packages
 
 **`packages/schemas`** - Zod Validation Schemas
-- All 11 object types with full schemas:
+- All 8 object types with full schemas:
   - Project, Task, Daily Note
-  - Knowledge Bit, Personal Bit
+  - Resource (knowledge, notes, snippets, quotes, ideas)
   - Weblink, Person, Page
-  - Financial Entry, Calendar Entry, Habit
+  - Calendar Entry
 - Property type schemas (15 types)
 - Relation schemas (9 relation types)
 - Base object schema with metadata

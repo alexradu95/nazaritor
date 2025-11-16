@@ -205,19 +205,16 @@ The system uses three specialized AI agents:
 
 ## Object Types
 
-### Default Objects (11 types)
+### Default Objects (8 types)
 
 1. **Projects** - Large initiatives with tasks and timelines
 2. **Daily Notes** - Journal entries for specific days
-3. **Knowledge Bits** - Atomic pieces of knowledge (Zettelkasten-style)
-4. **Personal Bits** - Private thoughts and reflections
-5. **Weblinks** - Saved URLs with metadata
-6. **People** - Contacts and relationships
-7. **Pages** - Long-form documents
-8. **Financial Entries** - Wealth tracking and budgets
-9. **Tasks** - Actionable items with deadlines
-10. **Calendar Entries** - Events and scheduled time
-11. **Habits** - Repeating behaviors to track
+3. **Resources** - Knowledge, notes, snippets, quotes, and ideas (combines knowledge and personal content)
+4. **Weblinks** - Saved URLs with metadata
+5. **People** - Contacts and relationships
+6. **Pages** - Long-form documents
+7. **Tasks** - Actionable items with deadlines
+8. **Calendar Entries** - Events and scheduled time
 
 ### Custom Objects
 
@@ -285,7 +282,7 @@ Documentation is organized into three categories in the `docs/` directory:
 
 ### 🔮 [Future Plans](docs/future/) - Vision & Roadmap
 - **[Roadmap](docs/future/roadmap.md)** - 6-month implementation plan
-- **[Object System](docs/future/object-system.md)** - Full specification of all 11 object types
+- **[Object System](docs/future/object-system.md)** - Full specification of all 8 object types
 - **[AI Agents](docs/future/ai-agents.md)** - Multi-agent system specification
 - **[Frontend Guide](docs/future/frontend-guide.md)** - Next.js minimal approach with AI SDK
 

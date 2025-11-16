@@ -1,38 +1,33 @@
 graph LR
     Project[Project] -->|parent_of| Task[Task]
-    Project -->|related_to| KnowledgeBit[Knowledge Bit]
+    Project -->|related_to| Resource[Resource]
     Project -->|assigned_to| Person[Person]
 
     Task -->|depends_on| Task2[Other Task]
     Task -->|blocks| Task3[Blocked Task]
     Task -->|assigned_to| Person
 
-    KnowledgeBit -->|references| Weblink[Weblink]
-    KnowledgeBit -->|related_to| KnowledgeBit2[Other Knowledge Bit]
+    Resource -->|references| Weblink[Weblink]
+    Resource -->|related_to| Resource2[Other Resource]
 
-    Page -->|contains| KnowledgeBit
+    Page -->|contains| Resource
     Page -->|references| Project
 
     DailyNote[Daily Note] -->|references| Task
     DailyNote -->|references| Person
+    DailyNote -->|references| Resource
 
     CalendarEntry[Calendar Entry] -->|related_to| Project
     CalendarEntry -->|assigned_to| Person
-
-    FinancialEntry[Financial Entry] -->|related_to| Project
-
-    Habit -->|related_to| DailyNote
 
     style Project fill:#4CAF50
     style Task fill:#4CAF50
     style Task2 fill:#4CAF50
     style Task3 fill:#4CAF50
-    style KnowledgeBit fill:#FF9800
-    style KnowledgeBit2 fill:#FF9800
+    style Resource fill:#FF9800
+    style Resource2 fill:#FF9800
     style Page fill:#FF9800
     style DailyNote fill:#FF9800
     style Weblink fill:#9C27B0
     style Person fill:#9C27B0
-    style FinancialEntry fill:#F44336
     style CalendarEntry fill:#F44336
-    style Habit fill:#F44336

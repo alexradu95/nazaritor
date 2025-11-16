@@ -5,15 +5,12 @@ import { RelationSchema } from '../relations'
 export const ObjectTypeEnum = z.enum([
   'project',
   'daily-note',
-  'knowledge-bit',
-  'personal-bit',
+  'resource',
   'weblink',
   'person',
   'page',
-  'financial-entry',
   'task',
   'calendar-entry',
-  'habit',
   'custom',
 ])
 

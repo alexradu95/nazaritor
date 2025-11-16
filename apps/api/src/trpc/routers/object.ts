@@ -14,6 +14,7 @@ function dbToBaseObject(obj: any) {
     content: obj.content || '',
     properties: obj.properties || {},
     relations: [],
+    archived: obj.archived, // Top-level archived field
     metadata: {
       ...(obj.metadata || {}),
       createdAt: obj.createdAt,

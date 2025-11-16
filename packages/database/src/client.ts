@@ -7,10 +7,12 @@ import { dirname } from 'path'
 // Database file path
 const dbPath = process.env.DATABASE_URL || './data/nazaritor.db'
 
-// Ensure data directory exists
-const dir = dirname(dbPath)
-if (!existsSync(dir)) {
-  mkdirSync(dir, { recursive: true })
+// Only create directory for local file paths, not for URLs
+if (!dbPath.includes('://')) {
+  const dir = dirname(dbPath)
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true })
+  }
 }
 
 // Create SQLite connection using Bun's native SQLite

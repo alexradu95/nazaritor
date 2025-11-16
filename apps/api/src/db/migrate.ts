@@ -24,7 +24,7 @@ async function migrate() {
     // Read migration file
     const migrationPath = join(
       import.meta.dir,
-      '../../../packages/database/migrations/0000_initial.sql'
+      '../../../../packages/database/migrations/0000_initial.sql'
     )
 
     if (!existsSync(migrationPath)) {
@@ -34,15 +34,9 @@ async function migrate() {
 
     const migration = readFileSync(migrationPath, 'utf-8')
 
-    // Split by semicolon and execute each statement
-    const statements = migration
-      .split(';')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0 && !s.startsWith('--'))
-
-    for (const statement of statements) {
-      db.run(statement)
-    }
+    // Execute the entire migration file at once
+    // This handles multi-line statements like triggers correctly
+    db.exec(migration)
 
     console.log('✅ Migrations complete!')
     console.log(`Database created at: ${dbPath}`)

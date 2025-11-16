@@ -34,6 +34,7 @@ export const BaseObjectSchema = z.object({
   properties: z.record(z.string(), PropertyValueSchema),
   relations: z.array(RelationSchema),
   metadata: MetadataSchema,
+  archived: z.boolean().default(false), // Top-level for convenience and indexing
 })
 
 export type BaseObject = z.infer<typeof BaseObjectSchema>

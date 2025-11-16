@@ -13,8 +13,9 @@ async function createTestContext() {
 }
 
 // Helper to create a caller
-function createCaller() {
-  return appRouter.createCaller(createTestContext())
+async function createCaller() {
+  const ctx = await createTestContext()
+  return appRouter.createCaller(ctx)
 }
 
 describe('Object Router', () => {
@@ -222,6 +223,9 @@ describe('Object Router', () => {
         properties: {},
         relations: [],
       })
+
+      // Wait to ensure timestamp will be different (DB uses second-level precision)
+      await new Promise((resolve) => setTimeout(resolve, 1100))
 
       // Update it
       const updated = await caller.object.update({

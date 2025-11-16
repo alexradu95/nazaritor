@@ -1,50 +1,39 @@
 // Re-export all types from schemas (inferred from Zod)
 export type {
+  // Base types
   BaseObject,
   ObjectType,
   Metadata,
   PropertyType,
-  PropertyConfig,
   PropertyValue,
+
+  // Relation types
   RelationType,
   Relation,
+  RelationMetadata,
+
+  // Object types
   Project,
   ProjectStatus,
   Priority,
   Task,
   TaskStatus,
-  Recurrence,
   DailyNote,
   Mood,
-  KnowledgeBit,
+  Resource,
+  ResourceType,
   Confidence,
-  PersonalBit,
-  PersonalBitCategory,
   Privacy,
-  EmotionalTone,
   Weblink,
   ReadStatus,
   Person,
   MeetingFrequency,
   Relationship,
-  SocialLinks,
   Page,
   PageStatus,
-  TableOfContentsItem,
-  FinancialEntry,
-  FinancialEntryType,
-  TransactionType,
-  BudgetPeriod,
   CalendarEntry,
   EventType,
   EventStatus,
-  Reminder,
-  CalendarRecurrence,
-  Habit,
-  HabitFrequency,
-  TimeOfDay,
-  Difficulty,
-  CheckIn,
 } from '@repo/schemas'
 
 // Additional utility types

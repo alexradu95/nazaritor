@@ -19,6 +19,12 @@
     "allowImportingTsExtensions": false,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@repo/schemas": ["./packages/schemas/src/index.ts"],
+      "@repo/database": ["./packages/database/src/index.ts"],
+      "@repo/types": ["./packages/types/src/index.ts"]
+    }
   }
 }

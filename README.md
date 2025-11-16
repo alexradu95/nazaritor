@@ -267,16 +267,29 @@ Shall I create a chart showing your wealth trend over time?"
 
 ## Documentation
 
-Comprehensive documentation is available in the `docs/` directory:
+Documentation is organized into three categories in the `docs/` directory:
 
-- **[Architecture](docs/architecture.md)** - Tech stack decisions and rationale
-- **[Project Structure](docs/project-structure.md)** - File organization and conventions
-- **[Object System](docs/object-system.md)** - Object types and schemas
-- **[API Design](docs/api-design.md)** - tRPC procedures and usage
-- **[AI Agents](docs/ai-agents.md)** - Multi-agent system specification
-- **[Frontend Guide](docs/frontend-guide.md)** - Next.js minimal approach
-- **[Development](docs/development.md)** - Setup, workflow, and troubleshooting
-- **[Roadmap](docs/roadmap.md)** - 6-month implementation plan
+### 📁 [Current Status](docs/current_status/) - What's Built Now
+- **[Quick Start](docs/current_status/QUICKSTART.md)** - Get up and running in 5 minutes
+- **[Setup Guide](docs/current_status/SETUP.md)** - Detailed installation and configuration
+- **[Project Status](docs/current_status/STATUS.md)** - Current capabilities and metrics
+- **[Architecture](docs/current_status/architecture.md)** - Tech stack decisions and rationale
+- **[API Design](docs/current_status/api-design.md)** - tRPC procedures and usage
+- **[Development](docs/current_status/development.md)** - Development workflow and commands
+
+### 📋 [Tasks](docs/tasks/) - Discrete Implementation Work
+- Ready-to-implement user stories
+- Self-contained, parallelizable tasks
+- Clear acceptance criteria and specs
+- (Tasks will be added as roadmap is broken down)
+
+### 🔮 [Future Plans](docs/future/) - Vision & Roadmap
+- **[Roadmap](docs/future/roadmap.md)** - 6-month implementation plan
+- **[Object System](docs/future/object-system.md)** - Full specification of all 11 object types
+- **[AI Agents](docs/future/ai-agents.md)** - Multi-agent system specification
+- **[Frontend Guide](docs/future/frontend-guide.md)** - Next.js minimal approach with AI SDK
+
+**See [docs/README.md](docs/README.md) for complete navigation guide.**
 
 ## Development Principles
 

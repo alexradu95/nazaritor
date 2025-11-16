@@ -7,7 +7,8 @@
       "Bash(bun:*)",
       "Bash(bunx turbo build:*)",
       "Bash(test -d:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

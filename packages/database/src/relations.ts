@@ -2,20 +2,10 @@ import { db } from './client'
 import { relations } from './schema/relations'
 import { eq, and, or } from 'drizzle-orm'
 import type { Relation, NewRelation } from './schema/relations'
+import type { RelationType } from '@repo/schemas'
 
-// Relation helper types
-export type RelationType =
-  | 'parent_of'
-  | 'child_of'
-  | 'blocks'
-  | 'blocked_by'
-  | 'relates_to'
-  | 'assigned_to'
-  | 'member_of'
-  | 'references'
-  | 'contains'
-  | 'attends'
-  | 'knows'
+// Re-export RelationType from schemas package for convenience
+export type { RelationType } from '@repo/schemas'
 
 export type CreateRelationOptions = {
   fromObjectId: string

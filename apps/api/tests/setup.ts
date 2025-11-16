@@ -42,7 +42,7 @@ async function setupTestDatabase() {
     // Read all migration files in order
     const migrationsDir = join(import.meta.dir, '../../../packages/database/migrations')
 
-    const migrationFiles = ['0000_initial.sql', '0001_add_constraints.sql']
+    const migrationFiles = ['0000_initial.sql', '0001_add_constraints.sql', '0002_add_custom_type.sql']
 
     for (const file of migrationFiles) {
       const migrationPath = join(migrationsDir, file)

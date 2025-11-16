@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 // Property type enum (kept for reference)
+// Note: 'relation' is NOT a property type - use the relations table instead
 export const PropertyTypeEnum = z.enum([
   'text',
   'long-text',
@@ -12,7 +13,6 @@ export const PropertyTypeEnum = z.enum([
   'checkbox',
   'url',
   'email',
-  'relation',
   'file',
   'ai-generated',
   'currency',
@@ -123,15 +123,8 @@ export const EmailPropertySchema = z.object({
   config: z.object({}).optional(),
 })
 
-export const RelationPropertySchema = z.object({
-  type: z.literal('relation'),
-  value: z.string().uuid(), // Single relation ID
-  config: z
-    .object({
-      allowedTypes: z.array(z.string()).optional(), // Which object types can be linked
-    })
-    .optional(),
-})
+// Note: Relations are stored in the relations table, not as properties
+// Use the relation helper functions from @repo/database instead
 
 export const FilePropertySchema = z.object({
   type: z.literal('file'),
@@ -185,6 +178,7 @@ export const RatingPropertySchema = z.object({
 })
 
 // Discriminated union of all property types
+// Note: Relations are NOT included - use the relations table
 export const PropertyValueSchema = z.discriminatedUnion('type', [
   TextPropertySchema,
   LongTextPropertySchema,
@@ -196,7 +190,6 @@ export const PropertyValueSchema = z.discriminatedUnion('type', [
   CheckboxPropertySchema,
   UrlPropertySchema,
   EmailPropertySchema,
-  RelationPropertySchema,
   FilePropertySchema,
   AiGeneratedPropertySchema,
   CurrencyPropertySchema,
@@ -215,7 +208,6 @@ export type MultiSelectProperty = z.infer<typeof MultiSelectPropertySchema>
 export type CheckboxProperty = z.infer<typeof CheckboxPropertySchema>
 export type UrlProperty = z.infer<typeof UrlPropertySchema>
 export type EmailProperty = z.infer<typeof EmailPropertySchema>
-export type RelationProperty = z.infer<typeof RelationPropertySchema>
 export type FileProperty = z.infer<typeof FilePropertySchema>
 export type AiGeneratedProperty = z.infer<typeof AiGeneratedPropertySchema>
 export type CurrencyProperty = z.infer<typeof CurrencyPropertySchema>

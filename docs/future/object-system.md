@@ -2,15 +2,36 @@
 
 ## Overview
 
-The object system is the core of the knowledge management platform. Everything in the system is an object - projects, notes, tasks, people, habits, and more. Objects are flexible, extensible, and interconnected through relations.
+The object system is the core of the knowledge management platform. Everything in the system is an object - projects, notes, tasks, people, and more. Objects are flexible, extensible, and interconnected through relations.
 
 ### Design Philosophy
 
 - **Everything is an object**: Unified mental model for all entities
 - **Flexible schema**: Objects support custom properties via JSON columns
-- **Strongly typed**: Zod schemas ensure type safety
+- **Strongly typed**: Zod schemas ensure type safety at compile-time AND runtime
 - **AI-first**: Objects designed to be understood and manipulated by AI agents
-- **Relational**: Objects can link to other objects (graph-based)
+- **Relational**: Objects link through a dedicated relations table (not embedded in properties)
+
+---
+
+## Implemented Object Types
+
+Currently implemented (as of 2024):
+- ✅ `project` - Projects with status, priority, dates
+- ✅ `task` - Tasks with status, scheduling, recurrence
+- ✅ `resource` - Knowledge resources (articles, notes, snippets, ideas)
+- ✅ `daily-note` - Daily journal entries with mood tracking
+- ✅ `calendar-entry` - Events, meetings, appointments
+- ✅ `person` - Contacts with relationship tracking
+- ✅ `weblink` - Bookmarks with metadata
+- ✅ `page` - Wiki-style pages with table of contents
+- ✅ `custom` - User-defined custom object types
+
+**Future types** (documented but not yet implemented):
+- ⏳ `habit` - Habit tracking
+- ⏳ `financial-entry` - Financial transactions
+
+**Note:** `resource` consolidates what was previously planned as separate `knowledge-bit` and `personal-bit` types.
 
 ---
 
@@ -26,16 +47,13 @@ export const BaseObjectSchema = z.object({
   id: z.string().uuid(),
   type: z.enum([
     'project',
-    'daily-note',
-    'knowledge-bit',
-    'personal-bit',
-    'weblink',
-    'person',
-    'page',
-    'financial-entry',
     'task',
+    'resource',
+    'daily-note',
     'calendar-entry',
-    'habit',
+    'person',
+    'weblink',
+    'page',
     'custom', // User-defined custom objects
   ]),
   title: z.string().min(1).max(500),

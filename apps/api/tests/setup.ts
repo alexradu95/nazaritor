@@ -44,15 +44,11 @@ async function setupTestDatabase() {
   db.run('PRAGMA foreign_keys = ON')
 
   try {
-    // Read all migration files in order
+    // Read fresh schema migration (single comprehensive migration)
     const migrationsDir = join(import.meta.dir, '../../../packages/database/migrations')
 
     const migrationFiles = [
-      '0000_initial.sql',
-      '0001_add_constraints.sql',
-      '0002_add_custom_type.sql',
-      '0003_unique_daily_note_dates.sql',
-      '0004_add_composite_indexes.sql',
+      '0000_initial_schema.sql',
     ]
 
     for (const file of migrationFiles) {

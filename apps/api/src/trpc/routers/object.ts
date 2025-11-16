@@ -3,10 +3,11 @@ import { protectedProcedure } from '../middleware/errorHandler'
 import { z } from 'zod'
 import { BaseObjectSchema } from '@repo/schemas'
 import type { Metadata } from '@repo/schemas'
-import { objects } from '@repo/database'
+import { objects, relations } from '@repo/database'
 import type { Object as DbObject } from '@repo/database'
 import { eq, desc, and } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
+import { getOrCreateDailyNote, getTodayDateString } from '../../services/daily-note-helpers'
 
 // Helper function to convert DB object to BaseObject schema
 // Note: Relations are NOT included in BaseObject - they must be fetched separately
@@ -66,7 +67,31 @@ export const objectRouter = router({
         })
       }
 
-      return dbToBaseObject(result[0])
+      const newObject = result[0]
+
+      // AUTO-LINKING: Link object to today's daily note (timeline feature)
+      // Skip auto-linking for daily-note objects themselves to avoid circular references
+      if (input.type !== 'daily-note') {
+        try {
+          const todayDate = getTodayDateString()
+          const dailyNote = await getOrCreateDailyNote(todayDate, ctx.db)
+
+          // Create 'created_on' relation
+          await ctx.db.insert(relations).values({
+            fromObjectId: newObject.id,
+            toObjectId: dailyNote.id,
+            relationType: 'created_on',
+            metadata: {
+              auto: true, // Mark as auto-created
+            },
+          })
+        } catch (error) {
+          // Log error but don't fail object creation if daily note linking fails
+          console.error('Failed to auto-link to daily note:', error)
+        }
+      }
+
+      return dbToBaseObject(newObject)
     }),
 
   // Get object by ID
@@ -248,5 +273,55 @@ export const objectRouter = router({
         .returning()
 
       return dbToBaseObject(result[0])
+    }),
+
+  // TIMELINE QUERIES: Query objects by creation/modification date
+
+  // Get objects created on a specific date
+  objectsCreatedOnDate: protectedProcedure
+    .input(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) })) // YYYY-MM-DD format
+    .query(async ({ input, ctx }) => {
+      // Use virtual column created_date for efficient querying
+      const result = await ctx.db
+        .select()
+        .from(objects)
+        .where(eq(sql`${objects.id}`, sql`(SELECT id FROM objects WHERE created_date = ${input.date})`))
+        .orderBy(desc(objects.createdAt))
+
+      return result.map(dbToBaseObject)
+    }),
+
+  // Get objects modified on a specific date
+  objectsModifiedOnDate: protectedProcedure
+    .input(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }))
+    .query(async ({ input, ctx }) => {
+      // Use virtual column updated_date for efficient querying
+      const result = await ctx.db
+        .select()
+        .from(objects)
+        .where(eq(sql`${objects.id}`, sql`(SELECT id FROM objects WHERE updated_date = ${input.date})`))
+        .orderBy(desc(objects.updatedAt))
+
+      return result.map(dbToBaseObject)
+    }),
+
+  // Get timeline for a daily note (all objects created that day)
+  dailyNoteTimeline: protectedProcedure
+    .input(z.object({ dailyNoteId: z.string().uuid() }))
+    .query(async ({ input, ctx }) => {
+      // Find all objects with 'created_on' relation to this daily note
+      const timeline = await ctx.db
+        .select({ object: objects })
+        .from(relations)
+        .innerJoin(objects, eq(relations.fromObjectId, objects.id))
+        .where(
+          and(
+            eq(relations.toObjectId, input.dailyNoteId),
+            eq(relations.relationType, 'created_on')
+          )
+        )
+        .orderBy(desc(objects.createdAt))
+
+      return timeline.map((row) => dbToBaseObject(row.object))
     }),
 })

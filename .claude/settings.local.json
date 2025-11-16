@@ -9,7 +9,8 @@
       "Bash(test -d:*)",
       "Bash(test:*)",
       "Bash(tree:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(sqlite3 --version:*)"
     ],
     "deny": [],
     "ask": []

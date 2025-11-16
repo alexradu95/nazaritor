@@ -12,6 +12,9 @@ export const ObjectTypeEnum = z.enum([
   'task',
   'calendar-entry',
   'custom',
+  'tag',        // Tags for categorization across object types
+  'collection', // Collections for grouping within object types
+  'query',      // Saved queries for dynamic filtering
 ])
 
 export const MetadataSchema = z.object({

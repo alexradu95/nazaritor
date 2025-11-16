@@ -157,8 +157,14 @@ describe('Object Router', () => {
 
       const result = await caller.object.list({})
 
-      expect(result.objects).toHaveLength(2)
-      expect(result.total).toBeGreaterThanOrEqual(2)
+      // Should have 2 created objects + 1 auto-created daily note = 3 total
+      expect(result.objects).toHaveLength(3)
+      expect(result.total).toBe(3)
+
+      // Verify the created objects are present
+      const titles = result.objects.map(obj => obj.title)
+      expect(titles).toContain('Project 1')
+      expect(titles).toContain('Task 1')
     })
 
     test('should filter objects by type', async () => {

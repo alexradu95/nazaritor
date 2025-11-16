@@ -12,7 +12,23 @@ export const relations = sqliteTable(
     toObjectId: text('to_object_id')
       .notNull()
       .references(() => objects.id, { onDelete: 'cascade' }),
-    relationType: text('relation_type').notNull(),
+    relationType: text('relation_type', {
+      enum: [
+        'parent_of',
+        'child_of',
+        'blocks',
+        'blocked_by',
+        'relates_to',
+        'assigned_to',
+        'member_of',
+        'references',
+        'contains',
+        'attends',
+        'knows',
+        'created_on',   // NEW - Timeline feature
+        'tagged_with',  // NEW - Tags feature
+      ],
+    }).notNull(),
     metadata: text('metadata', { mode: 'json' }).notNull().default('{}'),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
   },

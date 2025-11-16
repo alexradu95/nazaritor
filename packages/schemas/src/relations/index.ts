@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-// Relation types - MUST match database constraint in 0001_add_constraints.sql
+// Relation types - MUST match database constraint in 0000_initial_schema.sql
 // Using snake_case to align with database convention
 export const RelationTypeEnum = z.enum([
   'parent_of',
@@ -9,11 +9,13 @@ export const RelationTypeEnum = z.enum([
   'blocked_by',
   'relates_to',
   'assigned_to',
-  'member_of',
+  'member_of',   // Used for collections - object is member of collection
   'references',
   'contains',
   'attends',
   'knows',
+  'created_on',  // Object was created on this day (links to daily-note)
+  'tagged_with', // Object is tagged with a tag object
 ])
 
 // Common metadata schemas for relations (optional, validation at app level)

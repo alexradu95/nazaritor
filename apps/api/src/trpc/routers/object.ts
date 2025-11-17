@@ -10,12 +10,18 @@ import { dbToBaseObject } from '../../utils/db-helpers'
 
 export const objectRouter = router({
   // Health check for object router
-  ping: publicProcedure.query(() => {
-    return { message: 'pong from object router' }
-  }),
+  ping: publicProcedure
+    .meta({ description: 'Health check endpoint for the object router' })
+    .query(() => {
+      return { message: 'pong from object router' }
+    }),
 
   // Create a new object
   create: protectedProcedure
+    .meta({
+      description:
+        'Create a new object (note, task, daily-note, etc.) and automatically link it to today\'s daily note for timeline tracking',
+    })
     .input(BaseObjectSchema.omit({ id: true, metadata: true }))
     .output(BaseObjectSchema)
     .mutation(async ({ input, ctx }) => {
@@ -74,6 +80,7 @@ export const objectRouter = router({
 
   // Get object by ID
   getById: protectedProcedure
+    .meta({ description: 'Retrieve a single object by its UUID' })
     .input(z.object({ id: z.string().uuid() }))
     .output(BaseObjectSchema.nullable())
     .query(async ({ input, ctx }) => {
@@ -90,6 +97,10 @@ export const objectRouter = router({
 
   // List objects with filters
   list: protectedProcedure
+    .meta({
+      description:
+        'List objects with optional filtering by type and archive status. Supports pagination with limit and offset.',
+    })
     .input(
       z.object({
         type: z.string().optional(),
@@ -130,6 +141,9 @@ export const objectRouter = router({
 
   // Update object
   update: protectedProcedure
+    .meta({
+      description: 'Update an existing object\'s title, content, or properties. Automatically updates the updatedAt timestamp.',
+    })
     .input(
       z.object({
         id: z.string().uuid(),
@@ -195,6 +209,7 @@ export const objectRouter = router({
 
   // Delete object
   delete: protectedProcedure
+    .meta({ description: 'Permanently delete an object by its UUID' })
     .input(z.object({ id: z.string().uuid() }))
     .output(z.object({ success: z.boolean() }))
     .mutation(async ({ input, ctx }) => {
@@ -219,6 +234,7 @@ export const objectRouter = router({
 
   // Archive/unarchive object
   archive: protectedProcedure
+    .meta({ description: 'Archive or unarchive an object to hide/show it from default views' })
     .input(
       z.object({
         id: z.string().uuid(),
@@ -257,6 +273,9 @@ export const objectRouter = router({
 
   // Get objects created on a specific date
   objectsCreatedOnDate: protectedProcedure
+    .meta({
+      description: 'Retrieve all objects created on a specific date (YYYY-MM-DD format) for timeline queries',
+    })
     .input(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) })) // YYYY-MM-DD format
     .query(async ({ input, ctx }) => {
       // Use virtual column created_date for efficient querying
@@ -271,6 +290,9 @@ export const objectRouter = router({
 
   // Get objects modified on a specific date
   objectsModifiedOnDate: protectedProcedure
+    .meta({
+      description: 'Retrieve all objects modified on a specific date (YYYY-MM-DD format) for timeline queries',
+    })
     .input(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }))
     .query(async ({ input, ctx }) => {
       // Use virtual column updated_date for efficient querying
@@ -285,6 +307,9 @@ export const objectRouter = router({
 
   // Get timeline for a daily note (all objects created that day)
   dailyNoteTimeline: protectedProcedure
+    .meta({
+      description: 'Get all objects created on the same day as a specific daily note, ordered by creation time',
+    })
     .input(z.object({ dailyNoteId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
       // Find all objects with 'created_on' relation to this daily note

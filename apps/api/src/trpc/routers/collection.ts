@@ -18,6 +18,9 @@ import { dbToBaseObject } from '../../utils/db-helpers'
 export const collectionRouter = router({
   // Create a new collection
   create: protectedProcedure
+    .meta({
+      description: 'Create a new collection to group objects of the same type (e.g., "Work Projects" for project objects)',
+    })
     .input(CollectionSchema.omit({ id: true, metadata: true, type: true }))
     .output(CollectionSchema)
     .mutation(async ({ input, ctx }) => {
@@ -52,6 +55,9 @@ export const collectionRouter = router({
 
   // List all collections (optionally filter by object type)
   list: protectedProcedure
+    .meta({
+      description: 'List all non-archived collections, with optional filtering by the type of objects they contain',
+    })
     .input(
       z
         .object({
@@ -86,6 +92,7 @@ export const collectionRouter = router({
 
   // Get collection by ID
   getById: protectedProcedure
+    .meta({ description: 'Retrieve a specific collection by its UUID' })
     .input(z.object({ id: z.string().uuid() }))
     .output(CollectionSchema.nullable())
     .query(async ({ input, ctx }) => {
@@ -102,6 +109,10 @@ export const collectionRouter = router({
 
   // Add object to collection (create 'member_of' relation)
   addObject: protectedProcedure
+    .meta({
+      description:
+        'Add an object to a collection by creating a "member_of" relation. Validates that the object type matches the collection\'s objectType.',
+    })
     .input(
       z.object({
         objectId: z.string().uuid(),
@@ -182,6 +193,9 @@ export const collectionRouter = router({
 
   // Remove object from collection
   removeObject: protectedProcedure
+    .meta({
+      description: 'Remove an object from a collection by deleting the "member_of" relation',
+    })
     .input(
       z.object({
         objectId: z.string().uuid(),
@@ -205,6 +219,9 @@ export const collectionRouter = router({
 
   // Get all objects in a collection
   objectsInCollection: protectedProcedure
+    .meta({
+      description: 'Retrieve all non-archived objects that are members of a specific collection',
+    })
     .input(z.object({ collectionId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
       // Find all objects via 'member_of' relation
@@ -226,6 +243,9 @@ export const collectionRouter = router({
 
   // Get all collections for a specific object
   collectionsForObject: protectedProcedure
+    .meta({
+      description: 'Retrieve all collections that a specific object belongs to',
+    })
     .input(z.object({ objectId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
       // Find all collections via 'member_of' relation

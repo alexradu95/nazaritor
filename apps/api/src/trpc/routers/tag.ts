@@ -17,6 +17,7 @@ import { dbToBaseObject } from '../../utils/db-helpers'
 export const tagRouter = router({
   // Create a new tag
   create: protectedProcedure
+    .meta({ description: 'Create a new tag object that can be used to categorize and organize other objects' })
     .input(
       TagSchema.omit({ id: true, metadata: true, type: true }).extend({
         properties: TagSchema.shape.properties.optional(),
@@ -54,7 +55,9 @@ export const tagRouter = router({
     }),
 
   // List all tags
-  list: protectedProcedure.query(async ({ ctx }) => {
+  list: protectedProcedure
+    .meta({ description: 'List all non-archived tags, ordered by creation date' })
+    .query(async ({ ctx }) => {
     const result = await ctx.db
       .select()
       .from(objects)
@@ -66,6 +69,7 @@ export const tagRouter = router({
 
   // Get tag by ID
   getById: protectedProcedure
+    .meta({ description: 'Retrieve a specific tag by its UUID' })
     .input(z.object({ id: z.string().uuid() }))
     .output(TagSchema.nullable())
     .query(async ({ input, ctx }) => {
@@ -82,6 +86,9 @@ export const tagRouter = router({
 
   // Tag an object (create 'tagged_with' relation)
   tagObject: protectedProcedure
+    .meta({
+      description: 'Add a tag to an object by creating a "tagged_with" relation between them',
+    })
     .input(
       z.object({
         objectId: z.string().uuid(),
@@ -151,6 +158,9 @@ export const tagRouter = router({
 
   // Untag an object (remove 'tagged_with' relation)
   untagObject: protectedProcedure
+    .meta({
+      description: 'Remove a tag from an object by deleting the "tagged_with" relation',
+    })
     .input(
       z.object({
         objectId: z.string().uuid(),
@@ -174,6 +184,9 @@ export const tagRouter = router({
 
   // Get all objects with a specific tag
   objectsByTag: protectedProcedure
+    .meta({
+      description: 'Retrieve all non-archived objects that have been tagged with a specific tag',
+    })
     .input(z.object({ tagId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
       // Find all objects via 'tagged_with' relation
@@ -195,6 +208,7 @@ export const tagRouter = router({
 
   // Get all tags for a specific object
   tagsForObject: protectedProcedure
+    .meta({ description: 'Retrieve all tags that have been applied to a specific object' })
     .input(z.object({ objectId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
       // Find all tags via 'tagged_with' relation

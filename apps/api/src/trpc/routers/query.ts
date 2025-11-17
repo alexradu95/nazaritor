@@ -19,6 +19,9 @@ import { dbToBaseObject } from '../../utils/db-helpers'
 export const queryRouter = router({
   // Create a new query
   create: protectedProcedure
+    .meta({
+      description: 'Create a new saved query with filters, sorting, and limits for dynamic object searches',
+    })
     .input(QuerySchema.omit({ id: true, metadata: true, type: true }))
     .output(QuerySchema)
     .mutation(async ({ input, ctx }) => {
@@ -52,7 +55,9 @@ export const queryRouter = router({
     }),
 
   // List all queries
-  list: protectedProcedure.query(async ({ ctx }) => {
+  list: protectedProcedure
+    .meta({ description: 'List all non-archived saved queries, ordered by creation date' })
+    .query(async ({ ctx }) => {
     const result = await ctx.db
       .select()
       .from(objects)
@@ -64,6 +69,7 @@ export const queryRouter = router({
 
   // Get query by ID
   getById: protectedProcedure
+    .meta({ description: 'Retrieve a specific saved query by its UUID' })
     .input(z.object({ id: z.string().uuid() }))
     .output(QuerySchema.nullable())
     .query(async ({ input, ctx }) => {
@@ -80,6 +86,9 @@ export const queryRouter = router({
 
   // Update query
   update: protectedProcedure
+    .meta({
+      description: 'Update an existing saved query\'s title, content, or filter properties',
+    })
     .input(
       z.object({
         id: z.string().uuid(),
@@ -145,6 +154,7 @@ export const queryRouter = router({
 
   // Delete query
   delete: protectedProcedure
+    .meta({ description: 'Permanently delete a saved query by its UUID' })
     .input(z.object({ id: z.string().uuid() }))
     .output(z.object({ success: z.boolean() }))
     .mutation(async ({ input, ctx }) => {
@@ -169,6 +179,9 @@ export const queryRouter = router({
 
   // Execute a saved query
   execute: protectedProcedure
+    .meta({
+      description: 'Execute a saved query and return the matching objects based on its filters, sort, and limit settings',
+    })
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
       // Fetch query object
@@ -193,6 +206,9 @@ export const queryRouter = router({
 
   // Test a query without saving it
   test: protectedProcedure
+    .meta({
+      description: 'Test a query configuration without saving it - useful for previewing results before creating a saved query',
+    })
     .input(
       z.object({
         filters: QuerySchema.shape.properties.shape.filters.optional(),

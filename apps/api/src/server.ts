@@ -22,6 +22,25 @@ app.get('/health', (c) => {
   return c.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
+// tRPC UI Panel (development only)
+app.get('/panel', async (c) => {
+  if (process.env.NODE_ENV === 'production') {
+    return c.text('Not Found', 404)
+  }
+
+  const { renderTrpcPanel } = await import('trpc-ui')
+
+  return c.html(
+    renderTrpcPanel(appRouter, {
+      url: `http://localhost:${port}/trpc`,
+      meta: {
+        title: 'Nazaritor API',
+        description: 'AI-First Knowledge Management System tRPC API',
+      },
+    })
+  )
+})
+
 // tRPC endpoint
 app.use(
   '/trpc/*',

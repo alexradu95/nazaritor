@@ -3,7 +3,7 @@ import type { Config } from 'drizzle-kit'
 export default {
   schema: './src/schema/index.ts',
   out: './migrations',
-  driver: 'better-sqlite',
+  dialect: 'sqlite',
   dbCredentials: {
     url: process.env.DATABASE_URL || './data/nazaritor.db',
   },

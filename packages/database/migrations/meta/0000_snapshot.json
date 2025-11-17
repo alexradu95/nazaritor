@@ -1,154 +1,270 @@
 {
   "version": "5",
-  "dialect": "pg",
+  "dialect": "sqlite",
+  "id": "c601c8a5-ec40-43b7-9dc4-812e9d54c1ac",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "objects": {
       "name": "objects",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "uuid_generate_v4()"
+          "autoincrement": false
         },
         "type": {
           "name": "type",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "title": {
           "name": "title",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "content": {
           "name": "content",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "properties": {
           "name": "properties",
-          "type": "jsonb",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": "'{}'::jsonb"
+          "autoincrement": false,
+          "default": "'{}'"
         },
         "metadata": {
           "name": "metadata",
-          "type": "jsonb",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": "'{\"tags\": [], \"archived\": false, \"favorited\": false}'::jsonb"
+          "autoincrement": false,
+          "default": "'{\"tags\":[],\"favorited\":false}'"
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp with time zone",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "autoincrement": false,
+          "default": "(unixepoch())"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp with time zone",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "autoincrement": false,
+          "default": "(unixepoch())"
         },
         "archived": {
           "name": "archived",
-          "type": "boolean",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": false
         }
       },
       "indexes": {
         "type_idx": {
-          "columns": ["type"]
+          "name": "type_idx",
+          "columns": [
+            "type"
+          ],
+          "isUnique": false
         },
         "created_at_idx": {
-          "columns": ["created_at"]
+          "name": "created_at_idx",
+          "columns": [
+            "created_at"
+          ],
+          "isUnique": false
         },
         "updated_at_idx": {
-          "columns": ["updated_at"]
+          "name": "updated_at_idx",
+          "columns": [
+            "updated_at"
+          ],
+          "isUnique": false
         },
         "archived_idx": {
-          "columns": ["archived"]
+          "name": "archived_idx",
+          "columns": [
+            "archived"
+          ],
+          "isUnique": false
+        },
+        "idx_objects_type_archived": {
+          "name": "idx_objects_type_archived",
+          "columns": [
+            "type",
+            "archived"
+          ],
+          "isUnique": false
+        },
+        "idx_objects_archived_type": {
+          "name": "idx_objects_archived_type",
+          "columns": [
+            "archived",
+            "type"
+          ],
+          "isUnique": false
+        },
+        "idx_objects_type_updated_at": {
+          "name": "idx_objects_type_updated_at",
+          "columns": [
+            "type",
+            "updated_at"
+          ],
+          "isUnique": false
         }
-      }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "relations": {
       "name": "relations",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "uuid_generate_v4()"
+          "autoincrement": false
         },
         "from_object_id": {
           "name": "from_object_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "to_object_id": {
           "name": "to_object_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "relation_type": {
           "name": "relation_type",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "metadata": {
           "name": "metadata",
-          "type": "jsonb",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": "'{}'::jsonb"
+          "autoincrement": false,
+          "default": "'{}'"
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp with time zone",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "autoincrement": false,
+          "default": "(unixepoch())"
         }
       },
       "indexes": {
         "from_object_id_idx": {
-          "columns": ["from_object_id"]
+          "name": "from_object_id_idx",
+          "columns": [
+            "from_object_id"
+          ],
+          "isUnique": false
         },
         "to_object_id_idx": {
-          "columns": ["to_object_id"]
+          "name": "to_object_id_idx",
+          "columns": [
+            "to_object_id"
+          ],
+          "isUnique": false
         },
         "relation_type_idx": {
-          "columns": ["relation_type"]
+          "name": "relation_type_idx",
+          "columns": [
+            "relation_type"
+          ],
+          "isUnique": false
+        },
+        "idx_relations_from_type": {
+          "name": "idx_relations_from_type",
+          "columns": [
+            "from_object_id",
+            "relation_type"
+          ],
+          "isUnique": false
+        },
+        "idx_relations_to_type": {
+          "name": "idx_relations_to_type",
+          "columns": [
+            "to_object_id",
+            "relation_type"
+          ],
+          "isUnique": false
+        },
+        "idx_relations_from_to": {
+          "name": "idx_relations_from_to",
+          "columns": [
+            "from_object_id",
+            "to_object_id"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {
-        "fk_from_object": {
-          "columns": ["from_object_id"],
-          "referencedTable": "objects",
-          "referencedColumns": ["id"],
-          "onDelete": "cascade"
+        "relations_from_object_id_objects_id_fk": {
+          "name": "relations_from_object_id_objects_id_fk",
+          "tableFrom": "relations",
+          "tableTo": "objects",
+          "columnsFrom": [
+            "from_object_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
-        "fk_to_object": {
-          "columns": ["to_object_id"],
-          "referencedTable": "objects",
-          "referencedColumns": ["id"],
-          "onDelete": "cascade"
+        "relations_to_object_id_objects_id_fk": {
+          "name": "relations_to_object_id_objects_id_fk",
+          "tableFrom": "relations",
+          "tableTo": "objects",
+          "columnsFrom": [
+            "to_object_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
-      }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
+  },
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
   }
 }

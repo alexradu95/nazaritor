@@ -24,7 +24,7 @@ resetDatabase()
 console.log('Test environment initialized')
 console.log('Test database:', process.env.DATABASE_URL)
 
-// Create test database with schema
+// Create test database with schema using Drizzle migrator
 async function setupTestDatabase() {
   // Ensure data directory exists (no Bun equivalent for mkdir)
   const dir = dirname(testDbPath)
@@ -33,43 +33,41 @@ async function setupTestDatabase() {
     mkdirSync(dir, { recursive: true })
   }
 
-  // Remove existing test database using Bun native API
+  // Remove existing test database
   const testDbFile = Bun.file(testDbPath)
   if (await testDbFile.exists()) {
-    await Bun.$`rm -f ${testDbPath}`
+    const { unlinkSync } = await import('fs')
+    try {
+      unlinkSync(testDbPath)
+    } catch (err) {
+      // Ignore errors if file doesn't exist
+    }
   }
 
   // Create fresh database
-  const db = new Database(testDbPath, { create: true })
-  db.run('PRAGMA foreign_keys = ON')
+  const sqlite = new Database(testDbPath, { create: true })
+  sqlite.run('PRAGMA foreign_keys = ON')
 
   try {
-    // Read fresh schema migration (single comprehensive migration)
-    const migrationsDir = join(import.meta.dir, '../../../packages/database/migrations')
+    // Import Drizzle migrator
+    const { drizzle } = await import('drizzle-orm/bun-sqlite')
+    const { migrate } = await import('drizzle-orm/bun-sqlite/migrator')
 
-    const migrationFiles = [
-      '0000_initial_schema.sql',
-    ]
+    // Create Drizzle instance
+    const db = drizzle(sqlite)
 
-    for (const file of migrationFiles) {
-      const migrationPath = join(migrationsDir, file)
-      const migrationFile = Bun.file(migrationPath)
+    // Run migrations using Drizzle's migrator
+    const migrationsFolder = join(import.meta.dir, '../../../packages/database/migrations')
 
-      if (!(await migrationFile.exists())) {
-        throw new Error(`Migration file not found: ${migrationPath}`)
-      }
-
-      const migration = await migrationFile.text()
-      db.exec(migration)
-      console.log(`  ✅ ${file} applied`)
-    }
-
+    console.log('Applying migrations to test database...')
+    await migrate(db, { migrationsFolder })
     console.log('✅ Test database schema created')
-    db.close()
+
+    sqlite.close()
   } catch (err) {
     console.error('Failed to create test database schema!')
     console.error(err)
-    db.close()
+    sqlite.close()
     throw err
   }
 }

@@ -1,9 +1,11 @@
 #!/usr/bin/env bun
-// Script to apply database migrations
+// Script to apply database migrations using Drizzle's migrator
 
+import { drizzle } from 'drizzle-orm/bun-sqlite'
+import { migrate } from 'drizzle-orm/bun-sqlite/migrator'
 import { Database } from 'bun:sqlite'
-import { join, dirname } from 'path'
-import { readdirSync, mkdirSync } from 'fs'
+import { dirname, join } from 'path'
+import { mkdirSync } from 'fs'
 
 // Use SQLite database, ignore any PostgreSQL DATABASE_URL
 const dbPath = './data/nazaritor.db'
@@ -20,33 +22,23 @@ try {
   }
 }
 
-// Open database
-const db = new Database(dbPath, { create: true })
-db.run('PRAGMA foreign_keys = ON')
+// Open database connection
+const sqlite = new Database(dbPath, { create: true })
+sqlite.run('PRAGMA foreign_keys = ON')
 
-// Get all migration files in order
-const migrationsDir = join(import.meta.dir, '../migrations')
-const migrationFiles = readdirSync(migrationsDir)
-  .filter((file) => file.endsWith('.sql'))
-  .sort()
+// Create Drizzle instance
+const db = drizzle(sqlite)
 
-console.log(`Found ${migrationFiles.length} migration files`)
+// Run migrations using Drizzle's migrator
+const migrationsFolder = join(import.meta.dir, '../migrations')
 
-// Apply each migration
-for (const file of migrationFiles) {
-  console.log(`Applying migration: ${file}`)
-
-  const migrationPath = join(migrationsDir, file)
-  const migration = await Bun.file(migrationPath).text()
-
-  try {
-    db.exec(migration)
-    console.log(`  ✅ ${file} applied successfully`)
-  } catch (error) {
-    console.error(`  ❌ Failed to apply ${file}:`, error)
-    throw error
-  }
+try {
+  console.log('Applying migrations...')
+  await migrate(db, { migrationsFolder })
+  console.log('\n✅ All migrations applied successfully')
+} catch (error) {
+  console.error('❌ Migration failed:', error)
+  throw error
+} finally {
+  sqlite.close()
 }
-
-db.close()
-console.log('\n✅ All migrations applied successfully')
